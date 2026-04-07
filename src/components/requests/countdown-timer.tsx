@@ -10,20 +10,26 @@ export function CountdownTimer({
   expiresAt: string;
   createdAt: string;
 }) {
-  const [remaining, setRemaining] = useState(() =>
-    getTimeRemaining(new Date(expiresAt))
-  );
-  const [percentage, setPercentage] = useState(() =>
-    getExpirationPercentage(new Date(createdAt), new Date(expiresAt))
-  );
+  // Initialize with null to avoid hydration mismatch (Date.now() differs server/client)
+  const [remaining, setRemaining] = useState<ReturnType<typeof getTimeRemaining> | null>(null);
+  const [percentage, setPercentage] = useState<number | null>(null);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    const update = () => {
       setRemaining(getTimeRemaining(new Date(expiresAt)));
       setPercentage(getExpirationPercentage(new Date(createdAt), new Date(expiresAt)));
-    }, 60_000);
+    };
+    update();
+    const interval = setInterval(update, 60_000);
     return () => clearInterval(interval);
   }, [expiresAt, createdAt]);
+
+  // Show nothing on first server render to prevent hydration mismatch
+  if (remaining === null || percentage === null) {
+    return (
+      <div className="h-8 animate-pulse rounded bg-muted" />
+    );
+  }
 
   if (remaining.expired) {
     return (

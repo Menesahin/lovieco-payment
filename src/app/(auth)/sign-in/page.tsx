@@ -12,7 +12,7 @@ export default function SignInPage() {
       <form
         action={async (formData) => {
           "use server";
-          await signIn("resend", formData);
+          await signIn("resend", { ...Object.fromEntries(formData), redirectTo: "/dashboard" });
         }}
       >
         <label

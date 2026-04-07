@@ -9,7 +9,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Resend({
-      from: "LovePay <noreply@lovepay.com>",
+      from: "LovePay <onboarding@resend.dev>",
     }),
     // Test-only: bypass magic link for E2E tests (ADR-007)
     ...(process.env.NODE_ENV === "test"
