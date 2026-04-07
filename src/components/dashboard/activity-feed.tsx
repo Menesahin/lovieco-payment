@@ -145,10 +145,11 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
                       Decline
                     </Button>
                     {item.requestId && (
-                      <Link href={`/requests/${item.requestId}`}>
-                        <Button size="sm" variant="ghost" className="h-7 rounded-lg px-2 text-xs text-stone-400">
-                          View
-                        </Button>
+                      <Link
+                        href={`/requests/${item.requestId}`}
+                        className="h-7 rounded-lg border border-amber-200 bg-amber-50 px-3 text-xs font-medium text-amber-700 hover:bg-amber-100 transition-colors inline-flex items-center"
+                      >
+                        Details →
                       </Link>
                     )}
                   </div>
