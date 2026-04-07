@@ -4,6 +4,7 @@ import { useActionState, useState } from "react";
 import { toCents, formatCents } from "@/lib/utils/currency";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
+import { DollarSign } from "lucide-react";
 
 interface CreateRequestFormProps {
   onSubmit: (formData: FormData) => Promise<unknown>;
@@ -63,7 +64,9 @@ export function CreateRequestForm({ onSubmit }: CreateRequestFormProps) {
           Amount <span className="text-red-500">*</span>
         </label>
         <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-medium text-muted-foreground">$</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+            <DollarSign className="h-4 w-4" />
+          </span>
           <input
             id="amount"
             name="amount"
@@ -75,7 +78,7 @@ export function CreateRequestForm({ onSubmit }: CreateRequestFormProps) {
             placeholder="0.00"
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
-            className="w-full rounded-xl border border-stone-300 bg-white py-3 pl-8 pr-4 text-sm font-mono outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
+            className="w-full rounded-xl border border-stone-300 bg-white py-3 pl-10 pr-4 text-sm font-mono outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
           />
         </div>
         {fieldErrors?.amountCents && (
@@ -102,16 +105,16 @@ export function CreateRequestForm({ onSubmit }: CreateRequestFormProps) {
 
       {/* Preview */}
       {preview && (
-        <div className="rounded-xl bg-stone-50 border border-stone-200 p-4 text-center">
-          <p className="text-xs text-muted-foreground mb-1">You&apos;re requesting</p>
-          <p className="text-2xl font-bold font-mono">{preview}</p>
+        <div className="rounded-xl bg-gradient-to-br from-stone-50 to-stone-100/50 border border-stone-200 p-5 text-center">
+          <p className="text-xs text-muted-foreground mb-1.5">You&apos;re requesting</p>
+          <p className="text-3xl font-bold font-mono tracking-tight">{preview}</p>
         </div>
       )}
 
       {/* Submit */}
       <Button
         type="submit"
-        className="w-full rounded-xl py-3 text-sm shadow-sm"
+        className="w-full rounded-xl py-3 text-sm shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.98]"
         disabled={isPending}
       >
         {isPending ? (

@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "LovePay — P2P Payment Requests",
+  title: "Lovie.co — P2P Payment Requests",
   description: "Request money from anyone, hassle-free. Send payment requests via email and get paid faster.",
 };
 

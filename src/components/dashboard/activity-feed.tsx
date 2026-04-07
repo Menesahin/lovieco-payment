@@ -26,12 +26,14 @@ interface ActivityFeedProps {
   onDecline: (id: string) => Promise<{ success: boolean; error?: string }>;
 }
 
-const typeConfig: Record<string, { icon: string; iconBg: string; iconColor: string }> = {
-  request_incoming: { icon: "↓", iconBg: "bg-amber-100", iconColor: "text-amber-700" },
-  request_outgoing: { icon: "↑", iconBg: "bg-blue-50", iconColor: "text-blue-600" },
-  payment_sent: { icon: "−", iconBg: "bg-red-50", iconColor: "text-red-600" },
-  payment_received: { icon: "+", iconBg: "bg-emerald-50", iconColor: "text-emerald-600" },
-  topup: { icon: "$", iconBg: "bg-stone-100", iconColor: "text-stone-600" },
+import { ArrowDownLeft, ArrowUpRight, Minus, Plus, Wallet as WalletIcon, Inbox } from "lucide-react";
+
+const typeConfig: Record<string, { icon: React.ReactNode; iconBg: string }> = {
+  request_incoming: { icon: <ArrowDownLeft className="h-4 w-4" />, iconBg: "bg-amber-100 text-amber-700" },
+  request_outgoing: { icon: <ArrowUpRight className="h-4 w-4" />, iconBg: "bg-blue-50 text-blue-600" },
+  payment_sent: { icon: <Minus className="h-4 w-4" />, iconBg: "bg-red-50 text-red-600" },
+  payment_received: { icon: <Plus className="h-4 w-4" />, iconBg: "bg-emerald-50 text-emerald-600" },
+  topup: { icon: <WalletIcon className="h-4 w-4" />, iconBg: "bg-stone-100 text-stone-600" },
 };
 
 export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline }: ActivityFeedProps) {
@@ -59,9 +61,18 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
 
   if (items.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
-        <p className="text-sm font-medium text-stone-500">No activity yet</p>
-        <p className="mt-1 text-xs text-muted-foreground">Create a request or add funds to get started.</p>
+      <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+        <Inbox className="h-16 w-16 text-stone-200" strokeWidth={1} />
+        <p className="mt-4 text-base font-medium text-stone-500">No activity yet</p>
+        <p className="mt-1.5 text-sm text-muted-foreground max-w-xs">
+          Create a request or add funds to get started.
+        </p>
+        <Link
+          href="/requests/new"
+          className="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground shadow-sm transition-all duration-200 hover:bg-neutral-800 hover:shadow-md active:scale-[0.98]"
+        >
+          Create your first request
+        </Link>
       </div>
     );
   }
@@ -76,10 +87,10 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
           return (
             <div
               key={item.id}
-              className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50 transition-colors"
+              className="group flex items-center gap-3 px-5 py-3.5 hover:bg-stone-50/60 transition-colors duration-150 border-l-2 border-transparent hover:border-amber-500/60"
             >
               {/* Icon */}
-              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${config.iconBg} ${config.iconColor}`}>
+              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${config.iconBg}`}>
                 {config.icon}
               </div>
 

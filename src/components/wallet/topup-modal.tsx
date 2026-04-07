@@ -14,6 +14,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { toCents, formatCents } from "@/lib/utils/currency";
+import { Plus, DollarSign } from "lucide-react";
 
 interface TopupModalProps {
   onTopup: (amountCents: number) => Promise<{ success: boolean; error?: string; newBalance?: number }>;
@@ -46,11 +47,11 @@ export function TopupModal({ onTopup }: TopupModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors text-sm font-bold cursor-pointer">
-          +
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-600 text-white hover:bg-emerald-700 shadow-sm transition-all duration-200 hover:shadow-md active:scale-[0.95] cursor-pointer">
+          <Plus className="h-4 w-4" />
         </span>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="rounded-2xl">
         <DialogHeader>
           <DialogTitle>Add Funds</DialogTitle>
           <DialogDescription>
@@ -58,11 +59,13 @@ export function TopupModal({ onTopup }: TopupModalProps) {
           </DialogDescription>
         </DialogHeader>
         <div className="py-4">
-          <label htmlFor="topup-amount" className="mb-1.5 block text-sm font-medium">
+          <label htmlFor="topup-amount" className="mb-2 block text-sm font-medium">
             Amount
           </label>
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">$</span>
+            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <DollarSign className="h-4 w-4" />
+            </span>
             <input
               id="topup-amount"
               type="number"
@@ -72,14 +75,16 @@ export function TopupModal({ onTopup }: TopupModalProps) {
               placeholder="0.00"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full rounded-lg border bg-background py-2.5 pl-7 pr-3 text-sm outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+              className="w-full rounded-xl border border-stone-300 bg-white py-3 pl-10 pr-4 text-sm font-mono outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
             />
           </div>
-          <p className="mt-1 text-xs text-muted-foreground">Min $1.00 · Max $10,000.00</p>
+          <p className="mt-1.5 text-xs text-muted-foreground">Min $1.00 · Max $10,000.00</p>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleSubmit} disabled={isPending || !amount}>
+          <Button variant="outline" onClick={() => setOpen(false)} className="rounded-xl">
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} disabled={isPending || !amount} className="rounded-xl shadow-sm hover:shadow-md transition-all active:scale-[0.98]">
             {isPending ? <LoadingSpinner className="mr-2" /> : null}
             Add Funds
           </Button>
