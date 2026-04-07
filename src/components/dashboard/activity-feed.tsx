@@ -144,6 +144,13 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
                     >
                       Decline
                     </Button>
+                    {item.requestId && (
+                      <Link href={`/requests/${item.requestId}`}>
+                        <Button size="sm" variant="ghost" className="h-7 rounded-lg px-2 text-xs text-stone-400">
+                          View
+                        </Button>
+                      </Link>
+                    )}
                   </div>
                 )}
               </div>

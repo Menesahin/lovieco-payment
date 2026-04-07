@@ -268,26 +268,48 @@ export function RequestDetail({ request, role, walletBalance, onPay, onDecline, 
 
 function ShareLink({ token }: { token: string }) {
   const [copied, setCopied] = useState(false);
-  const url = typeof window !== "undefined" ? `${window.location.origin}/r/${token}` : `/r/${token}`;
+  const [url, setUrl] = useState(`/r/${token}`);
+
+  // Set full URL on client only (avoid hydration mismatch)
+  useState(() => {
+    if (typeof window !== "undefined") {
+      setUrl(`${window.location.origin}/r/${token}`);
+    }
+  });
 
   const copy = async () => {
-    await navigator.clipboard.writeText(url);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback for non-HTTPS
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (
-    <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">
-      <p className="mb-2 text-xs font-medium text-muted-foreground">Share this link with the recipient:</p>
+    <div className="rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 p-4 shadow-sm">
+      <p className="mb-2 text-xs font-semibold text-white/80">Share this link with the recipient:</p>
       <div className="flex gap-2">
         <input
           readOnly
           value={url}
-          className="flex-1 rounded-md border bg-background px-2 py-1.5 text-xs"
+          className="flex-1 rounded-lg bg-white/20 border border-white/30 px-3 py-2 text-xs text-white placeholder-white/50 font-mono"
         />
-        <Button size="sm" variant="outline" onClick={copy}>
+        <button
+          onClick={copy}
+          className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-amber-700 hover:bg-white/90 transition-colors shadow-sm"
+        >
           {copied ? "Copied!" : "Copy"}
-        </Button>
+        </button>
       </div>
     </div>
   );
