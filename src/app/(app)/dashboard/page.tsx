@@ -8,16 +8,22 @@ import Link from "next/link";
 export default async function DashboardPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; type?: string }>;
 }) {
   const user = await requireAuth();
   const params = await searchParams;
   const page = Math.max(1, Number(params.page) || 1);
+  const typeFilter = params.type;
 
   const [feed, stats] = await Promise.all([
     activityRepository.getFeed(user.id, page, 10),
     activityRepository.getQuickStats(user.id),
   ]);
+
+  // Client-side type filter
+  const filteredItems = typeFilter
+    ? feed.data.filter((item) => item.type === typeFilter)
+    : feed.data;
 
   return (
     <div className="space-y-6">
@@ -84,9 +90,17 @@ export default async function DashboardPage({
 
       {/* Activity Feed */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold">Recent Activity</h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Recent Activity</h2>
+          <div className="flex gap-1.5">
+            <FilterLink href="/dashboard" label="All" active={!typeFilter} />
+            <FilterLink href="/dashboard?type=request_incoming" label="Incoming" active={typeFilter === "request_incoming"} />
+            <FilterLink href="/dashboard?type=request_outgoing" label="Outgoing" active={typeFilter === "request_outgoing"} />
+            <FilterLink href="/dashboard?type=topup" label="Top Ups" active={typeFilter === "topup"} />
+          </div>
+        </div>
         <ActivityFeed
-          items={feed.data}
+          items={filteredItems}
           total={feed.total}
           page={feed.page}
           totalPages={feed.totalPages}
@@ -95,5 +109,18 @@ export default async function DashboardPage({
         />
       </div>
     </div>
+  );
+}
+
+function FilterLink({ href, label, active }: { href: string; label: string; active: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+        active ? "bg-stone-900 text-white" : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+      }`}
+    >
+      {label}
+    </Link>
   );
 }

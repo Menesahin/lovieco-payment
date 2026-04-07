@@ -46,8 +46,8 @@ export default async function WalletPage({
       </div>
 
       {/* Transaction History */}
-      <div>
-        <div className="flex items-center justify-between mb-4">
+      <div className="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div className="flex items-center justify-between px-6 pt-5 pb-4">
           <h2 className="text-lg font-semibold">Transactions</h2>
           {/* Type Filter */}
           <div className="flex gap-1.5">
@@ -59,7 +59,7 @@ export default async function WalletPage({
         </div>
 
         {filteredData.length === 0 ? (
-          <div className="rounded-2xl border border-stone-200 bg-white p-12 text-center">
+          <div className="px-6 py-12 text-center">
             <p className="text-muted-foreground">
               {typeFilter ? "No transactions match this filter." : "No transactions yet. Add funds to get started."}
             </p>
@@ -67,7 +67,7 @@ export default async function WalletPage({
         ) : (
           <>
             {/* Desktop Table */}
-            <div className="hidden md:block rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-sm">
+            <div className="hidden md:block">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-stone-100 bg-stone-50/50">
@@ -107,11 +107,11 @@ export default async function WalletPage({
             </div>
 
             {/* Mobile Cards */}
-            <div className="space-y-2 md:hidden">
+            <div className="divide-y divide-stone-100 md:hidden">
               {filteredData.map((tx: TransactionDTO) => {
                 const config = typeConfig[tx.type] ?? { label: tx.type, dotColor: "bg-stone-400" };
                 return (
-                  <div key={tx.id} className="rounded-xl border border-stone-200 bg-white p-4">
+                  <div key={tx.id} className="px-5 py-3.5">
                     <div className="flex items-center justify-between">
                       <span className="inline-flex items-center gap-1.5 text-sm">
                         <span className={`h-2 w-2 rounded-full ${config.dotColor}`} />
@@ -135,7 +135,7 @@ export default async function WalletPage({
 
         {/* Pagination */}
         {txResult.totalPages > 1 && (
-          <div className="mt-4 flex items-center justify-between">
+          <div className="border-t border-stone-100 px-6 py-4 flex items-center justify-between">
             <p className="text-sm text-muted-foreground">
               Page {page} of {txResult.totalPages}
             </p>
