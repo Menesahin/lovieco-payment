@@ -8,35 +8,35 @@
 
 ## Phase 0: Spec-Driven Foundation + Bootstrap
 
-- [ ] Initialize git repository with `.gitignore`
-- [ ] Create `specs/` directory structure (`specs/`, `specs/adr/`, `specs/architecture/`, `specs/ux/`)
-- [ ] Write `specs/constitution.md`
-- [ ] Write `specs/spec.md`
-- [ ] Write `specs/adr/001-tech-stack.md`
-- [ ] Write `specs/adr/002-money-as-integer-cents.md`
-- [ ] Write `specs/adr/003-expiration-check-on-read.md`
-- [ ] Write `specs/adr/004-unregistered-recipients.md`
-- [ ] Write `specs/adr/005-shareable-token-vs-id.md`
-- [ ] Write `specs/adr/006-server-actions-over-api.md`
-- [ ] Write `specs/adr/007-auth-test-bypass.md`
-- [ ] Write `specs/adr/008-docker-deployment.md`
-- [ ] Write `specs/adr/009-email-only-recipient.md`
-- [ ] Write `specs/adr/010-concurrency-control.md`
-- [ ] Write `specs/architecture/system-overview.md`
-- [ ] Write `specs/architecture/data-flow.md`
-- [ ] Write `specs/architecture/state-machine.md`
-- [ ] Write `specs/ux/user-flows.md`
-- [ ] Write `specs/ux/mockups.md`
-- [ ] Write `specs/roadmap.md`
-- [ ] Write `specs/tasks.md` (this file)
-- [ ] Run `npx create-next-app@16.2 . --typescript --tailwind --app --src-dir --import-alias "@/*"` (Next.js 16 removed next lint)
-- [ ] Install core deps: `pnpm add prisma @prisma/client @auth/prisma-adapter next-auth@beta zod resend pino pino-pretty`
-- [ ] Install dev deps: `pnpm add -D @playwright/test`
-- [ ] Init shadcn: `pnpm dlx shadcn@latest init`
-- [ ] Init Prisma: `npx prisma init`
-- [ ] Configure `next.config.ts`: `output: "standalone"`
-- [ ] Verify `tsconfig.json`: strict mode, `@/` alias
-- [ ] Create `.env` and `.env.example`
+- [x] Initialize git repository with `.gitignore`
+- [x] Create `specs/` directory structure (`specs/`, `specs/adr/`, `specs/architecture/`, `specs/ux/`)
+- [x] Write `specs/constitution.md`
+- [x] Write `specs/spec.md`
+- [x] Write `specs/adr/001-tech-stack.md`
+- [x] Write `specs/adr/002-money-as-integer-cents.md`
+- [x] Write `specs/adr/003-expiration-check-on-read.md`
+- [x] Write `specs/adr/004-unregistered-recipients.md`
+- [x] Write `specs/adr/005-shareable-token-vs-id.md`
+- [x] Write `specs/adr/006-server-actions-over-api.md`
+- [x] Write `specs/adr/007-auth-test-bypass.md`
+- [x] Write `specs/adr/008-docker-deployment.md`
+- [x] Write `specs/adr/009-email-only-recipient.md`
+- [x] Write `specs/adr/010-concurrency-control.md`
+- [x] Write `specs/architecture/system-overview.md`
+- [x] Write `specs/architecture/data-flow.md`
+- [x] Write `specs/architecture/state-machine.md`
+- [x] Write `specs/ux/user-flows.md`
+- [x] Write `specs/ux/mockups.md`
+- [x] Write `specs/roadmap.md`
+- [x] Write `specs/tasks.md` (this file)
+- [x] Run `npx create-next-app@16.2 . --typescript --tailwind --app --src-dir --import-alias "@/*"` (Next.js 16 removed next lint)
+- [x] Install core deps: `pnpm add prisma @prisma/client @auth/prisma-adapter next-auth@beta zod resend pino pino-pretty`
+- [x] Install dev deps: `pnpm add -D @playwright/test`
+- [x] Init shadcn: `pnpm dlx shadcn@latest init`
+- [x] Init Prisma: `npx prisma init`
+- [x] Configure `next.config.ts`: `output: "standalone"`
+- [x] Verify `tsconfig.json`: strict mode, `@/` alias
+- [x] Create `.env` and `.env.example`
 - [ ] Init Spec-Kit (if available): `specify init .`
 - [ ] Commit: `docs: add spec-driven documentation`
 - [ ] Commit: `chore: bootstrap Next.js project with deps`
