@@ -21,11 +21,9 @@ export default async function SignInPage() {
         action={async (formData) => {
           "use server";
           const email = formData.get("email") as string;
-          try {
-            await signIn("resend", { email, redirect: false });
-          } catch {
-            // signIn throws on redirect — expected behavior
-          }
+          await signIn("resend", formData);
+          // NextAuth redirects to /verify-request automatically via pages config
+          // But we need email in the URL for dev mode magic link display
           redirect(`/verify-request?email=${encodeURIComponent(email)}`);
         }}
       >

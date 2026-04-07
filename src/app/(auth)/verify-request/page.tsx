@@ -9,17 +9,19 @@ export default async function VerifyRequestPage({
   const params = await searchParams;
   const email = params.email;
 
-  // In test/dev mode, fetch the latest verification token from DB and show the magic link
+  // Dev mode: fetch the full callback URL we stored in sendVerificationRequest
   let magicLink: string | null = null;
   if (process.env.NODE_ENV !== "production" && email) {
-    const token = await prisma.verificationToken.findFirst({
-      where: { identifier: email },
+    const record = await prisma.verificationToken.findFirst({
+      where: { identifier: `dev_url:${email}` },
       orderBy: { expires: "desc" },
     });
-
-    if (token) {
-      const baseUrl = process.env.AUTH_URL || "http://localhost:3000";
-      magicLink = `${baseUrl}/api/auth/callback/resend?token=${encodeURIComponent(token.token)}&email=${encodeURIComponent(email)}`;
+    if (record) {
+      magicLink = record.token; // This is the full NextAuth callback URL
+      // Clean up so it's single-use
+      await prisma.verificationToken.deleteMany({
+        where: { identifier: `dev_url:${email}` },
+      });
     }
   }
 
@@ -36,37 +38,33 @@ export default async function VerifyRequestPage({
       <p className="mt-2 text-sm text-muted-foreground max-w-xs mx-auto">
         We sent a sign-in link to{" "}
         {email ? <strong className="text-foreground">{email}</strong> : "your email"}.
-        Click the link to continue.
       </p>
 
-      {/* TEST MODE: Show magic link */}
+      {/* DEV MODE: Show magic link */}
       {magicLink && (
         <div className="mt-6 rounded-xl border-2 border-dashed border-amber-300 bg-amber-50 p-5 text-left">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-sm">🧪</span>
             <span className="text-xs font-semibold text-amber-800 uppercase tracking-wider">
-              Test Mode — Magic Link
+              Test Mode — Click to sign in
             </span>
           </div>
           <p className="text-xs text-amber-700 mb-3">
-            In production, this link would be sent via email. For testing, click below:
+            In production this link is sent via email. For testing, click below:
           </p>
-          <Link
+          <a
             href={magicLink}
             className="block w-full rounded-lg bg-amber-600 px-4 py-2.5 text-center text-sm font-medium text-white hover:bg-amber-700 transition-colors"
           >
-            Click here to sign in →
-          </Link>
-          <p className="mt-3 text-[10px] text-amber-600 break-all font-mono leading-relaxed">
-            {magicLink}
-          </p>
+            Sign in as {email} →
+          </a>
         </div>
       )}
 
       {!magicLink && (
         <div className="mt-6 rounded-xl bg-stone-50 p-4">
           <p className="text-xs text-muted-foreground">
-            Didn&apos;t receive it? Check your spam folder or{" "}
+            Didn&apos;t receive it? Check spam or{" "}
             <Link href="/sign-in" className="font-medium text-foreground underline underline-offset-2">
               try again
             </Link>.
