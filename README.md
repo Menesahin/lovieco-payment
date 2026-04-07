@@ -2,6 +2,32 @@
 
 > Request money from anyone, hassle-free. Built with spec-driven, AI-native development.
 
+**Live Demo:** [http://158.220.112.110:3006](http://158.220.112.110:3006)
+
+## Why This Architecture?
+
+This is a **rapid prototype** built in a few hours to demonstrate spec-driven development and fintech domain knowledge. We intentionally chose a **monolithic Next.js architecture** for speed of delivery.
+
+In a production environment, this would evolve into:
+
+```
+Current (Monolith)                    Production (Microservices)
+──────────────────                    ────────────────────────────
+Next.js 16 (all-in-one)        →     API Gateway (Kong/Traefik)
+  ├─ Server Actions             →     Payment Service (NestJS/Go)
+  ├─ Prisma ORM                 →     Wallet Service (event-sourced)
+  ├─ NextAuth                   →     Auth Service (Keycloak/Auth0)
+  └─ React UI                   →     Frontend (Next.js, standalone)
+                                       
+Single PostgreSQL              →     PostgreSQL + Redis + Kafka
+                                      Event-driven, CQRS pattern
+                                       
+Simulated payments             →     Stripe/Plaid integration
+                                      Real KYC, compliance, PCI-DSS
+```
+
+The **core patterns are production-ready** regardless of architecture: integer cents, Serializable transactions, atomic wallet transfers, audit trails, guard composition, check-on-read expiration.
+
 ## System Architecture
 
 ```
