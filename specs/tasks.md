@@ -1,6 +1,6 @@
 # Task Checklist
 
-> LovePay P2P Payment Request — Implementation Tasks
+> Lovie.co P2P Payment Request — Implementation Tasks
 > Mark each task as [x] when completed
 > Last updated: 2026-04-07
 
@@ -37,9 +37,9 @@
 - [x] Configure `next.config.ts`: `output: "standalone"`
 - [x] Verify `tsconfig.json`: strict mode, `@/` alias
 - [x] Create `.env` and `.env.example`
-- [ ] Init Spec-Kit (if available): `specify init .`
-- [ ] Commit: `docs: add spec-driven documentation`
-- [ ] Commit: `chore: bootstrap Next.js project with deps`
+- [ ] Init Spec-Kit (if available): `specify init .` (skipped — manual spec workflow used)
+- [x] Commit: `docs: add spec-driven documentation`
+- [x] Commit: `chore: bootstrap Next.js project with deps`
 
 ---
 
@@ -52,7 +52,7 @@
   - [x] VerificationToken model (NextAuth)
   - [x] PaymentRequest model with all fields and indexes
   - [x] RequestStatus enum
-- [ ] Run `npx prisma migrate dev --name init`
+- [x] Run `npx prisma migrate dev --name init`
 - [x] Create `src/lib/db.ts` — Prisma client singleton (globalThis + PrismaPg adapter for Prisma 7)
 - [x] Create `src/auth.ts` — NextAuth v5 config
   - [x] Resend provider
@@ -68,150 +68,123 @@
 - [x] Create `src/app/(auth)/sign-in/page.tsx` — email input form
 - [x] Create `src/app/(auth)/verify-request/page.tsx` — "Check your email"
 - [x] Create `src/app/(auth)/error/page.tsx` — auth error display
-- [ ] Test magic link flow end-to-end manually
-- [ ] Commit: `feat: add database schema and auth system`
+- [x] Test magic link flow end-to-end manually (dev bypass mode — no Resend needed)
+- [x] Commit: `feat: add database schema and auth system`
 
 ---
 
 ## Phase 2: UI Shell
 
-- [ ] Install shadcn components: `button card input badge tabs table skeleton dialog select separator avatar dropdown-menu toast`
-- [ ] Create `src/app/layout.tsx` — root layout (html, body, fonts, ThemeProvider, SessionProvider, Toaster)
-- [ ] Create `src/app/(app)/layout.tsx` — authenticated layout (sidebar + topbar + auth guard)
-- [ ] Create `src/components/layout/app-sidebar.tsx` — navigation links
-- [ ] Create `src/components/layout/top-bar.tsx` — user avatar + dropdown
-- [ ] Create `src/components/layout/mobile-nav.tsx` — bottom navigation for mobile
-- [ ] Create `src/components/shared/currency-display.tsx` — formatCents → "$25.00"
-- [ ] Create `src/components/shared/loading-spinner.tsx`
-- [ ] Verify responsive layout: desktop sidebar, mobile bottom nav
-- [ ] Commit: `feat: add app shell with responsive layout`
+- [x] Install shadcn components: button, card, input, badge, tabs, skeleton, dialog, select, separator, avatar, dropdown-menu, sonner
+- [x] Create `src/app/layout.tsx` — Geist Sans/Mono fonts, Toaster, Warm Neutral + Gold theme
+- [x] Create `src/app/(app)/layout.tsx` — sidebar + topbar + mobile nav, h-screen flex, white bg
+- [x] Create `src/components/layout/app-sidebar.tsx` — nav with active states, gradient logo
+- [x] Create `src/components/layout/top-bar.tsx` — balance pill, avatar initial, topup modal
+- [x] Create `src/components/layout/mobile-nav.tsx` — 4 items, amber active dot, safe-area padding
+- [x] Create `src/components/shared/currency-display.tsx`
+- [x] Create `src/components/shared/loading-spinner.tsx`
+- [x] Verify responsive layout
+- [x] Commit: `feat: add app shell with responsive layout`
 
 ---
 
 ## Phase 3: Server Actions + Queries
 
-- [ ] Create `src/lib/validations/payment-request.ts` — Zod schemas
-  - [ ] `createRequestSchema` (recipientEmail, amount, note)
-- [ ] Create `src/lib/utils/currency.ts`
-  - [ ] `formatCents(cents: number): string` → "$25.00"
-  - [ ] `toCents(dollars: number): number` → 2500
-- [ ] Create `src/lib/utils/expiration.ts`
-  - [ ] `isExpired(expiresAt: Date): boolean`
-  - [ ] `getTimeRemaining(expiresAt: Date): { days, hours, minutes }`
-  - [ ] `getExpirationPercentage(createdAt: Date, expiresAt: Date): number`
-  - [ ] `markExpiredOnRead(requests: PaymentRequest[]): Promise<PaymentRequest[]>`
-- [ ] Create `src/lib/guards/require-pending.ts`
-- [ ] Create `src/lib/guards/require-not-expired.ts`
-- [ ] Create `src/lib/guards/require-ownership.ts` (sender or recipient)
-- [ ] Create `src/lib/repositories/payment-request.repository.ts`
-  - [ ] `create(data)`
-  - [ ] `findById(id)`
-  - [ ] `findByShareableToken(token)`
-  - [ ] `getIncoming(userId, filters)`
-  - [ ] `getOutgoing(userId, filters)`
-  - [ ] `getStats(userId, tab)`
-  - [ ] `updateStatus(id, status, timestamps)`
-- [ ] Create `src/lib/actions/payment-request.ts`
-  - [ ] `createRequest(formData: FormData)`
-  - [ ] `payRequest(requestId: string)`
-  - [ ] `declineRequest(requestId: string)`
-  - [ ] `cancelRequest(requestId: string)`
-- [ ] Create `src/lib/dto/payment-request.dto.ts` — transform Prisma model → client-safe DTO
-- [ ] Create `src/lib/logger.ts` — Pino instance
-- [ ] Commit: `feat: add server actions, repositories, and business logic`
+- [x] Create `src/lib/validations/payment-request.ts` + `wallet.ts` — Zod schemas
+- [x] Create `src/lib/utils/currency.ts` — formatCents, toCents
+- [x] Create `src/lib/utils/expiration.ts` (client) + `expiration.server.ts` (server, markExpiredOnRead)
+- [x] Create guard functions: require-auth, require-pending, require-not-expired, require-ownership
+- [x] Create `src/lib/repositories/payment-request.repository.ts` — CRUD + filters + stats
+- [x] Create `src/lib/repositories/wallet.repository.ts` — getOrCreateWallet, getTransactions
+- [x] Create `src/lib/repositories/activity.repository.ts` — unified activity feed
+- [x] Create `src/lib/actions/payment-request.ts` — createRequest, payRequest (atomic wallet transfer), declineRequest, cancelRequest
+- [x] Create `src/lib/actions/wallet.ts` — topupWallet (atomic, Serializable)
+- [x] Create `src/lib/actions/settings.ts` — updateProfile
+- [x] Create `src/lib/actions/auth.ts` — requestMagicLink (dev bypass)
+- [x] Create `src/lib/dto/payment-request.dto.ts` + `wallet.dto.ts`
+- [x] Create `src/lib/logger.ts` — structured JSON logger
+- [x] Commit: done (multiple commits)
 
 ---
 
 ## Phase 4: Request Creation Flow
 
-- [ ] Create `src/app/(app)/requests/new/page.tsx` — Server Component shell
-- [ ] Create `src/components/requests/create-request-form.tsx` — Client Component
-  - [ ] Email input with validation
-  - [ ] AmountInput with $ prefix and auto-formatting
-  - [ ] Note textarea with character counter (0/500)
-  - [ ] Submit button with loading state (useActionState)
-  - [ ] Inline error messages per field
-  - [ ] Self-request prevention (client-side check)
-- [ ] Create `src/components/requests/amount-input.tsx` — currency-formatted input
-- [ ] Wire form to `createRequest` server action
-- [ ] Success: redirect to `/requests/{id}` + toast "Payment request sent!"
-- [ ] Error: preserve form data, show inline errors
-- [ ] Test: create request for existing user
-- [ ] Test: create request for non-existing user (orphan)
-- [ ] Commit: `feat: add request creation flow with validation`
+- [x] Create `/requests/new` page + CreateRequestForm (client, action via prop NX-11)
+- [x] Email input, amount input ($, mono font), note textarea (0/500 counter)
+- [x] Live amount preview card
+- [x] useActionState for pending/error, Zod validation (client + server)
+- [x] Self-request prevention
+- [x] Success redirect + toast
+- [x] Premium card wrapper, rounded-xl, amber focus rings
 
 ---
 
-## Phase 5: Dashboard
+## Phase 5: Dashboard (evolved to unified activity feed)
 
-- [ ] Create `src/app/(app)/dashboard/page.tsx` — Server Component (fetch data, pass to children)
-- [ ] Create `src/components/dashboard/dashboard-tabs.tsx` — Incoming/Outgoing toggle via URL params
-- [ ] Create `src/components/dashboard/stats-cards.tsx` — Pending, Paid, Declined, Total counts
-- [ ] Create `src/components/dashboard/request-table.tsx` — Desktop table layout
-- [ ] Create `src/components/dashboard/request-card.tsx` — Mobile card layout
-- [ ] Create `src/components/dashboard/request-row.tsx` — Single table row
-- [ ] Create `src/components/dashboard/status-badge.tsx` — Color-coded badge per status
-- [ ] Create `src/components/dashboard/status-filter.tsx` — Dropdown: All/Pending/Paid/Declined/Cancelled/Expired
-- [ ] Create `src/components/dashboard/search-input.tsx` — Debounced search (300ms) via URL param
-- [ ] Create `src/components/dashboard/pagination.tsx` — Previous/Next, "Showing X-Y of Z"
-- [ ] Create `src/components/dashboard/empty-state.tsx` — Per-context empty messages
-- [ ] Integrate markExpiredOnRead in dashboard data fetch
-- [ ] Test: incoming tab shows received requests
-- [ ] Test: outgoing tab shows sent requests
-- [ ] Test: filter by status works
-- [ ] Test: search by email/name works
-- [ ] Commit: `feat: add dashboard with tabs, filters, search, pagination`
+- [x] Create dashboard page — compact fintech layout, no page scroll
+- [x] Create activity-feed.tsx — unified timeline (requests + payments + topups)
+- [x] Inline stat cards (Balance, Pending, Completed)
+- [x] Status badges with dot indicators
+- [x] Activity type filter pills (All / Incoming / Outgoing / Top Ups)
+- [x] Inline Pay/Decline actions with confirmation dialogs
+- [x] Sticky pagination (outside scroll area)
+- [x] Empty state with CTAs
+- [x] markExpiredOnRead integrated in activity repository
 
 ---
 
 ## Phase 6: Request Detail + Actions
 
-- [ ] Create `src/app/(app)/requests/[id]/page.tsx` — Server Component (fetch by ID + ownership check)
-- [ ] Create `src/components/requests/request-detail-card.tsx` — Full info display
-- [ ] Create `src/components/requests/countdown-timer.tsx` — Live countdown (Client, setInterval 60s)
-- [ ] Create `src/components/requests/expiration-progress.tsx` — Color-coded progress bar
-- [ ] Create `src/components/requests/pay-button.tsx` — Confirmation dialog → loading sim → success
-- [ ] Create `src/components/requests/decline-button.tsx` — Confirmation dialog → decline
-- [ ] Create `src/components/requests/cancel-button.tsx` — Confirmation dialog → cancel
-- [ ] Create `src/components/requests/share-link-copy.tsx` — Copy to clipboard with feedback
-- [ ] Create `src/components/requests/payment-status.tsx` — Paid/Declined/Cancelled/Expired states
-- [ ] Handle expired request view (disabled Pay, Dismiss option)
-- [ ] Handle 404 for non-existent or unauthorized requests
-- [ ] Test: pay flow with loading simulation
-- [ ] Test: decline flow
-- [ ] Test: cancel flow (outgoing)
-- [ ] Test: expired request shows disabled state
-- [ ] Commit: `feat: add request detail view with pay, decline, cancel actions`
+- [x] Create `/requests/[id]` page — ownership check, wallet balance fetch
+- [x] Create request-detail.tsx — amount, status, counterparty, note, dates
+- [x] Create countdown-timer.tsx — live countdown, color progress bar (hydration-safe)
+- [x] Pay/Decline/Cancel with confirmation dialogs (actions via props, NX-11)
+- [x] Payment sim: 2.5s sleep OUTSIDE transaction (DB-02), atomic wallet transfer
+- [x] Balance display + insufficient funds guard
+- [x] Payment success screen: emerald checkmark, scale-in animation, mono amount
+- [x] Shareable link copy to clipboard
+- [x] Expired state: disabled Pay, warning message
+- [x] 404 for unauthorized/nonexistent
 
 ---
 
 ## Phase 7: Shareable Link
 
-- [ ] Create `src/app/r/[token]/page.tsx`
-- [ ] Handle: authenticated recipient → full actions
-- [ ] Handle: authenticated sender → outgoing view
-- [ ] Handle: authenticated non-involved → read-only
-- [ ] Handle: unauthenticated → read-only + "Sign in to pay" CTA
-- [ ] Sign-in CTA links to `/sign-in?callbackUrl=/r/{token}`
-- [ ] Verify orphan claim works after sign-in via shareable link
-- [ ] Handle: invalid token → 404
-- [ ] Commit: `feat: add shareable link for payment requests`
+- [x] Create `/r/[token]` page
+- [x] Not logged in → friendly sign-in prompt (no payment details exposed)
+- [x] Logged in + involved → redirect to `/requests/{id}`
+- [x] Logged in + not involved → "Access Restricted" message
+- [x] Invalid token → 404
+- [x] callbackUrl preserved through sign-in
 
 ---
 
-## Phase 8: Polish
+## Phase 8: Polish + UI/UX Overhaul
 
-- [ ] Create `src/app/page.tsx` — Landing page
-- [ ] Create `src/app/not-found.tsx` — Custom 404
-- [ ] Create `src/app/(app)/dashboard/loading.tsx` — Skeleton loader
-- [ ] Create `src/app/(app)/requests/[id]/loading.tsx` — Skeleton loader
-- [ ] Create `src/app/(app)/dashboard/error.tsx` — Error boundary
-- [ ] Create `src/app/(app)/requests/[id]/error.tsx` — Error boundary
-- [ ] Responsive pass: test all pages at 375px, 768px, 1440px
-- [ ] Accessibility pass: keyboard navigation, focus indicators, aria labels
-- [ ] Verify all toast notifications work
-- [ ] Verify all confirmation dialogs work
-- [ ] Commit: `feat: add landing page and polish`
+- [x] Landing page — gradient hero, feature cards, premium header
+- [x] 404 page — clean centered layout
+- [x] Loading skeletons (dashboard, request detail)
+- [x] Error boundaries (dashboard, request detail)
+- [x] Warm Neutral + Gold theme (globals.css)
+- [x] Geist Sans/Mono fonts
+- [x] White backgrounds everywhere (no gray patches)
+- [x] Settings page — profile edit, wallet info, account details, danger zone
+- [x] Wallet page — balance card, transaction table + filter pills + pagination, compact layout
+- [x] Sign-in — inline magic link display (dev mode, no Resend needed)
+- [x] Dev login endpoint (/api/dev-login)
+- [x] Responsive pass
+- [x] Toast notifications verified
+- [x] Confirmation dialogs verified
+
+## Phase 8b: Wallet System (bonus, not in original spec)
+
+- [x] Wallet model + Transaction model + CHECK constraint (non-negative balance)
+- [x] Atomic wallet transfers in Serializable transaction (sleep outside)
+- [x] topupWallet action (Zod: $1-$10K)
+- [x] TopupModal component
+- [x] Transaction audit trail (TOPUP, PAYMENT_SENT, PAYMENT_RECEIVED)
+- [x] Wallet page with table view + type filter + pagination
+- [x] Balance in TopBar + insufficient funds guard in request detail
 
 ---
 

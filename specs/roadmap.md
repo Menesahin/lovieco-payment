@@ -1,6 +1,6 @@
 # Project Roadmap
 
-> LovePay P2P Payment Request Application
+> Lovie.co P2P Payment Request Application
 > Last updated: 2026-04-07
 
 ---
@@ -9,15 +9,16 @@
 
 | # | Milestone | Phase | Depends On | Deliverable |
 |---|-----------|-------|-----------|-------------|
-| M0 | **Specs Complete** | Phase 0 | — | All spec docs in `specs/` |
-| M1 | **Auth Working** | Phase 1 | M0 | Magic link sign-in, session, protected routes |
-| M2 | **Core Flow Complete** | Phase 4 | M1 | Create request → see detail with shareable link |
-| M3 | **Dashboard Live** | Phase 5 | M2 | Incoming/outgoing tabs, filter, search, pagination |
-| M4 | **Actions Working** | Phase 6 | M3 | Pay (with simulation), Decline, Cancel — all actions functional |
-| M5 | **Feature Complete** | Phase 8 | M4 | Shareable link, landing page, polish, responsive |
-| M6 | **Deployed** | Phase 9 | M5 | Docker → VPS, publicly accessible URL |
-| M7 | **Tests Passing** | Phase 10 | M5 | All E2E tests green, video recordings generated |
-| M8 | **Submission Ready** | Phase 11 | M6, M7 | README, spec-kit artifacts, live demo verified |
+| M0 | **Specs Complete** | Phase 0 | — | All spec docs in `specs/` | ✅ DONE |
+| M1 | **Auth Working** | Phase 1 | M0 | Magic link (dev bypass), session, proxy.ts | ✅ DONE |
+| M2 | **Core Flow Complete** | Phase 4 | M1 | Create request → detail → shareable link | ✅ DONE |
+| M3 | **Dashboard Live** | Phase 5 | M2 | Unified activity feed, filters, pagination | ✅ DONE |
+| M4 | **Actions Working** | Phase 6 | M3 | Pay (atomic wallet transfer), Decline, Cancel | ✅ DONE |
+| M5 | **Feature Complete** | Phase 8 | M4 | Landing, settings, wallet, polish | ✅ DONE |
+| M5b | **Wallet System** | Phase 8b | M4 | Balance, topup, atomic transfers, audit trail | ✅ DONE (bonus) |
+| M6 | **Deployed** | Phase 9 | M5 | Docker → VPS, publicly accessible URL | ❌ TODO |
+| M7 | **Tests Passing** | Phase 10 | M5 | All E2E tests green, video recordings | ❌ TODO |
+| M8 | **Submission Ready** | Phase 11 | M6, M7 | README, findings, demo verified | ❌ TODO |
 
 ---
 
