@@ -5,11 +5,23 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
 import { logger } from "@/lib/logger";
 
+const isDev = process.env.NODE_ENV !== "production";
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
     Resend({
       from: "LovePay <onboarding@resend.dev>",
+      // In dev mode: skip actual email sending, just create token in DB
+      ...(isDev
+        ? {
+            sendVerificationRequest: async ({ identifier: email, url, token }) => {
+              logger.info({ email, token: token.substring(0, 8) + "..." }, "dev_magic_link_created");
+              // Token is already saved to DB by NextAuth adapter
+              // User will see it on /verify-request page
+            },
+          }
+        : {}),
     }),
     // Test-only: bypass magic link for E2E tests (ADR-007)
     ...(process.env.NODE_ENV === "test"
@@ -46,7 +58,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   events: {
     async signIn({ user }) {
-      // Orphan claim: link unclaimed payment requests to newly signed-in user (ADR-004)
       if (user.id && user.email) {
         const result = await prisma.paymentRequest.updateMany({
           where: {
