@@ -81,22 +81,31 @@ export function RequestDetail({ request, role, walletBalance, onPay, onDecline, 
 
   if (paySuccess) {
     return (
-      <div className="mx-auto max-w-lg py-16 text-center">
-        <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <div className="mx-auto max-w-md py-20 text-center">
+        <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-50 border border-emerald-200 animate-[scale-in_0.3s_ease-out]">
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h2 className="text-2xl font-semibold">Payment Successful!</h2>
-        <p className="mt-2 text-muted-foreground">
-          {request.amountFormatted} sent to {request.senderName ?? request.senderEmail}
+        <h2 className="text-2xl font-semibold tracking-tight">Payment Successful</h2>
+        <p className="mt-3 text-3xl font-bold font-mono text-emerald-700">{request.amountFormatted}</p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          sent to {request.senderName ?? request.senderEmail}
         </p>
-        <Link
-          href="/dashboard"
-          className="mt-6 inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
-        >
-          Back to Dashboard
-        </Link>
+        <div className="mt-8 flex flex-col gap-3">
+          <Link
+            href="/dashboard"
+            className="rounded-xl border border-stone-300 px-6 py-3 text-sm font-medium hover:bg-stone-50 transition-all"
+          >
+            Back to Dashboard
+          </Link>
+          <Link
+            href="/wallet"
+            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          >
+            View Wallet →
+          </Link>
+        </div>
       </div>
     );
   }
@@ -268,7 +277,7 @@ function ShareLink({ token }: { token: string }) {
   };
 
   return (
-    <div className="rounded-lg border bg-muted/50 p-3">
+    <div className="rounded-xl border border-stone-200 bg-stone-50 p-3">
       <p className="mb-2 text-xs font-medium text-muted-foreground">Share this link with the recipient:</p>
       <div className="flex gap-2">
         <input

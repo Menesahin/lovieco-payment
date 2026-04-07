@@ -76,7 +76,7 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
           return (
             <div
               key={item.id}
-              className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/40 transition-colors"
+              className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50 transition-colors"
             >
               {/* Icon */}
               <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${config.iconBg} ${config.iconColor}`}>

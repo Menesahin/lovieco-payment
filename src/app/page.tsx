@@ -4,7 +4,7 @@ export default function LandingPage() {
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-white/80 backdrop-blur-sm border-b border-stone-200/60">
+      <header className="sticky top-0 z-50 flex items-center justify-between px-6 py-4 bg-white border-b border-stone-200">
         <div className="flex items-center gap-2.5">
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-sm">
             <span className="text-white font-bold text-sm">L</span>

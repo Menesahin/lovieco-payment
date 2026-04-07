@@ -4,7 +4,7 @@ import { MobileNav } from "@/components/layout/mobile-nav";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex h-screen bg-muted/30">
+    <div className="flex h-screen bg-white">
       <AppSidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <TopBar />

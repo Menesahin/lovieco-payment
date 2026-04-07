@@ -50,7 +50,7 @@
 
 :root {
   /* Warm Neutral + Gold — Premium Fintech */
-  --background: #FAFAF9;
+  --background: #FFFFFF;
   --foreground: #171717;
   --card: #FFFFFF;
   --card-foreground: #171717;
@@ -128,4 +128,9 @@
   html {
     @apply font-sans;
   }
+}
+
+@keyframes scale-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
