@@ -1,13 +1,45 @@
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: lovie
+      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: lovieco
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U lovie -d lovieco"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  migrate:
+    build: .
+    command: npx prisma migrate deploy
+    environment:
+      DATABASE_URL: "postgresql://lovie:changeme@db:5432/lovieco"
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
   app:
     build: .
     ports:
       - "${PORT:-3000}:3000"
-    env_file: .env
-    restart: unless-stopped
+    environment:
+      DATABASE_URL: "postgresql://lovie:changeme@db:5432/lovieco"
+      AUTH_SECRET: "${AUTH_SECRET:-lovepay-dev-secret}"
+      AUTH_RESEND_KEY: "${AUTH_RESEND_KEY:-}"
+      AUTH_URL: "${AUTH_URL:-http://localhost:3000}"
+      NODE_ENV: "${NODE_ENV:-production}"
     depends_on:
       migrate:
         condition: service_completed_successfully
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
       interval: 30s
@@ -15,16 +47,17 @@ services:
       start_period: 15s
       retries: 3
 
-  migrate:
-    build: .
-    command: npx prisma migrate deploy
-    env_file: .env
-    restart: "no"
-
   seed:
     build: .
     command: npx tsx prisma/seed.ts
-    env_file: .env
+    environment:
+      DATABASE_URL: "postgresql://lovie:changeme@db:5432/lovieco"
+    depends_on:
+      db:
+        condition: service_healthy
     restart: "no"
     profiles:
       - seed
+
+volumes:
+  pgdata:
