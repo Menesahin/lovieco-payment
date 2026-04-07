@@ -59,29 +59,16 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
 
   if (items.length === 0) {
     return (
-      <div className="rounded-2xl border border-stone-200 bg-white p-14 text-center shadow-sm">
-        <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-stone-100 flex items-center justify-center">
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-stone-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" />
-          </svg>
-        </div>
-        <p className="font-medium">No activity yet</p>
-        <p className="mt-1 text-sm text-muted-foreground">Create a payment request or add funds to get started.</p>
-        <div className="mt-5 flex justify-center gap-3">
-          <Link href="/requests/new" className="rounded-xl bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:bg-neutral-800 transition-all">
-            New Request
-          </Link>
-          <Link href="/wallet" className="rounded-xl border border-stone-300 px-5 py-2.5 text-sm font-medium hover:bg-stone-50 transition-all">
-            Add Funds
-          </Link>
-        </div>
+      <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+        <p className="text-sm font-medium text-stone-500">No activity yet</p>
+        <p className="mt-1 text-xs text-muted-foreground">Create a request or add funds to get started.</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-sm divide-y divide-stone-100">
+      <div className="divide-y divide-stone-100">
         {items.map((item) => {
           const config = typeConfig[item.type] ?? typeConfig.topup;
           const isPayProcessing = payingId === item.requestId;
@@ -89,10 +76,10 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
           return (
             <div
               key={item.id}
-              className="flex items-center gap-4 px-5 py-4 hover:bg-stone-50/50 transition-colors"
+              className="flex items-center gap-3 px-5 py-3 hover:bg-stone-50/40 transition-colors"
             >
               {/* Icon */}
-              <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold ${config.iconBg} ${config.iconColor}`}>
+              <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold ${config.iconBg} ${config.iconColor}`}>
                 {config.icon}
               </div>
 
@@ -110,15 +97,14 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
                     <StatusBadge status={item.status as "PENDING" | "PAID" | "DECLINED" | "CANCELLED" | "EXPIRED"} />
                   )}
                 </div>
-                {item.description && (
-                  <p className="text-xs text-muted-foreground truncate mt-0.5">&ldquo;{item.description}&rdquo;</p>
-                )}
-                <p className="text-[11px] text-stone-400 mt-0.5">{formatRelative(item.createdAt)}</p>
+                <p className="text-[11px] text-stone-400 mt-0.5 truncate">
+                  {item.description ? `${item.description} · ` : ""}{formatRelative(item.createdAt)}
+                </p>
               </div>
 
               {/* Amount + Actions */}
               <div className="shrink-0 text-right">
-                <p className={`text-sm font-semibold font-mono ${
+                <p className={`text-xs font-semibold font-mono ${
                   item.type === "topup" || item.type === "payment_received" ? "text-emerald-600" :
                   item.type === "payment_sent" ? "text-red-600" :
                   item.status === "PAID" && item.type === "request_outgoing" ? "text-emerald-600" :
@@ -155,18 +141,18 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="mt-4 flex items-center justify-between">
-          <p className="text-sm text-muted-foreground">
-            Page {page} of {totalPages} &middot; {total} items
+        <div className="border-t border-stone-100 px-5 py-2.5 flex items-center justify-between shrink-0">
+          <p className="text-[11px] text-muted-foreground">
+            {page}/{totalPages}
           </p>
           <div className="flex gap-2">
             {page > 1 && (
-              <Link href={`/dashboard?page=${page - 1}`} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-50 transition-colors">
-                Previous
+              <Link href={`/dashboard?page=${page - 1}`} className="rounded-md border border-stone-200 px-2.5 py-1 text-[11px] hover:bg-stone-50 transition-colors">
+                Prev
               </Link>
             )}
             {page < totalPages && (
-              <Link href={`/dashboard?page=${page + 1}`} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-50 transition-colors">
+              <Link href={`/dashboard?page=${page + 1}`} className="rounded-md border border-stone-200 px-2.5 py-1 text-[11px] hover:bg-stone-50 transition-colors">
                 Next
               </Link>
             )}
