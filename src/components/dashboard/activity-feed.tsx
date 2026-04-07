@@ -139,26 +139,7 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
         })}
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="border-t border-stone-100 px-5 py-2.5 flex items-center justify-between shrink-0">
-          <p className="text-[11px] text-muted-foreground">
-            {page}/{totalPages}
-          </p>
-          <div className="flex gap-2">
-            {page > 1 && (
-              <Link href={`/dashboard?page=${page - 1}`} className="rounded-md border border-stone-200 px-2.5 py-1 text-[11px] hover:bg-stone-50 transition-colors">
-                Prev
-              </Link>
-            )}
-            {page < totalPages && (
-              <Link href={`/dashboard?page=${page + 1}`} className="rounded-md border border-stone-200 px-2.5 py-1 text-[11px] hover:bg-stone-50 transition-colors">
-                Next
-              </Link>
-            )}
-          </div>
-        </div>
-      )}
+      {/* Pagination moved to page.tsx for sticky bottom behavior */}
 
       {/* Confirmation Dialog */}
       <Dialog open={!!confirmAction} onOpenChange={() => setConfirmAction(null)}>

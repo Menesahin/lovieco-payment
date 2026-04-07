@@ -66,7 +66,7 @@ export default async function DashboardPage({
         </div>
 
         {/* Scrollable feed */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto min-h-0">
           <ActivityFeed
             items={filteredItems}
             total={feed.total}
@@ -76,6 +76,21 @@ export default async function DashboardPage({
             onDecline={declineRequest}
           />
         </div>
+
+        {/* Pagination — sticky bottom, outside scroll */}
+        {feed.totalPages > 1 && (
+          <div className="shrink-0 border-t border-stone-100 px-5 py-2.5 flex items-center justify-between bg-white">
+            <p className="text-[11px] text-muted-foreground">{feed.page}/{feed.totalPages}</p>
+            <div className="flex gap-1.5">
+              {feed.page > 1 && (
+                <Link href={`/dashboard?page=${feed.page - 1}${typeFilter ? `&type=${typeFilter}` : ""}`} className="rounded-md border border-stone-200 px-2.5 py-1 text-[11px] hover:bg-stone-50 transition-colors">Prev</Link>
+              )}
+              {feed.page < feed.totalPages && (
+                <Link href={`/dashboard?page=${feed.page + 1}${typeFilter ? `&type=${typeFilter}` : ""}`} className="rounded-md border border-stone-200 px-2.5 py-1 text-[11px] hover:bg-stone-50 transition-colors">Next</Link>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

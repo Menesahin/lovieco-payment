@@ -33,22 +33,22 @@ export default async function WalletPage({
   };
 
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
-      {/* Balance Card */}
-      <div className="rounded-2xl bg-gradient-to-br from-stone-900 to-stone-800 p-8 text-white shadow-lg">
-        <p className="text-sm text-stone-400 font-medium">Available Balance</p>
-        <p className="mt-2 text-4xl font-bold font-mono tracking-tight">
-          {formatCents(wallet.balanceCents)}
-        </p>
-        <div className="mt-5">
-          <TopupModal onTopup={topupWallet} />
+    <div className="flex h-full flex-col gap-4 overflow-hidden mx-auto max-w-3xl w-full">
+      {/* Balance Card — compact, fixed */}
+      <div className="shrink-0 rounded-2xl bg-gradient-to-br from-stone-900 to-stone-800 px-6 py-5 text-white shadow-lg flex items-center justify-between">
+        <div>
+          <p className="text-[10px] text-stone-500 font-medium uppercase tracking-widest">Balance</p>
+          <p className="mt-1 text-3xl font-bold font-mono tracking-tight">
+            {formatCents(wallet.balanceCents)}
+          </p>
         </div>
+        <TopupModal onTopup={topupWallet} />
       </div>
 
-      {/* Transaction History */}
-      <div className="rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
-        <div className="flex items-center justify-between px-6 pt-5 pb-4">
-          <h2 className="text-lg font-semibold">Transactions</h2>
+      {/* Transaction History — fills remaining, scrolls internally */}
+      <div className="flex flex-1 flex-col min-h-0 rounded-2xl border border-stone-200 bg-white shadow-sm overflow-hidden">
+        <div className="shrink-0 flex items-center justify-between px-5 py-3 border-b border-stone-100">
+          <h2 className="text-sm font-semibold">Transactions</h2>
           {/* Type Filter */}
           <div className="flex gap-1.5">
             <FilterPill href="/wallet" label="All" active={!typeFilter} />
@@ -58,6 +58,7 @@ export default async function WalletPage({
           </div>
         </div>
 
+        <div className="flex-1 overflow-y-auto">
         {filteredData.length === 0 ? (
           <div className="px-6 py-12 text-center">
             <p className="text-muted-foreground">
@@ -133,10 +134,12 @@ export default async function WalletPage({
           </>
         )}
 
-        {/* Pagination */}
+        </div>{/* end scroll wrapper */}
+
+        {/* Pagination — sticky bottom */}
         {txResult.totalPages > 1 && (
-          <div className="border-t border-stone-100 px-6 py-4 flex items-center justify-between">
-            <p className="text-sm text-muted-foreground">
+          <div className="shrink-0 border-t border-stone-100 px-5 py-2.5 flex items-center justify-between bg-white">
+            <p className="text-[11px] text-muted-foreground font-mono">
               Page {page} of {txResult.totalPages}
             </p>
             <div className="flex gap-2">
