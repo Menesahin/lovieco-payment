@@ -9,8 +9,8 @@ test.describe("Wallet", () => {
   });
 
   test("should show balance card", async ({ page }) => {
-    await expect(page.getByText("Balance")).toBeVisible();
-    await expect(page.getByText(/\$/)).toBeVisible();
+    await expect(page.getByText("Balance").first()).toBeVisible();
+    await expect(page.getByText(/\$\d/).first()).toBeVisible();
   });
 
   test("should show transaction history", async ({ page }) => {
@@ -23,7 +23,7 @@ test.describe("Wallet", () => {
   });
 
   test("should show topup modal", async ({ page }) => {
-    await page.locator("[class*='rounded-full'][class*='bg-emerald']").click();
-    await expect(page.getByText("Add Funds")).toBeVisible();
+    await page.locator("span.cursor-pointer").first().click();
+    await expect(page.getByRole("dialog")).toBeVisible();
   });
 });

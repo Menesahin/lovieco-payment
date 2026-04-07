@@ -14,9 +14,9 @@ test.describe("Dashboard", () => {
   });
 
   test("should show stat cards", async ({ page }) => {
-    await expect(page.getByText("Balance")).toBeVisible();
-    await expect(page.getByText("Pending")).toBeVisible();
-    await expect(page.getByText("Completed")).toBeVisible();
+    await expect(page.getByText("Balance").first()).toBeVisible();
+    await expect(page.getByText("Pending").first()).toBeVisible();
+    await expect(page.getByText("Completed").first()).toBeVisible();
   });
 
   test("should filter activity by type", async ({ page }) => {

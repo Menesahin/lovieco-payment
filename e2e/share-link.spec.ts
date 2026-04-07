@@ -5,7 +5,7 @@ import { USERS } from "./helpers/seed";
 test.describe("Shareable Link", () => {
   test("should redirect unauthenticated user to sign-in", async ({ page }) => {
     await page.goto("/r/share_1");
-    await expect(page.getByText(/sign in/i)).toBeVisible();
+    await expect(page.getByText(/sign in/i).first()).toBeVisible();
   });
 
   test("should redirect involved user to request detail", async ({ page }) => {
