@@ -1,156 +1,137 @@
 # Lovie.co — P2P Payment Requests
 
-A peer-to-peer payment request application built with a spec-driven, AI-native development workflow. Users can request money from others via email, track request status, and simulate payments with a DB-level wallet system.
+> Request money from anyone, hassle-free. Built with spec-driven, AI-native development.
 
-## Live Demo
+## System Architecture
 
-**URL:** _[to be added after deployment]_
+```
+┌─────────────────────────────────────────────────────┐
+│                     Browser                          │
+│  Landing · Sign-in · Dashboard · Wallet · Requests   │
+└──────────────────────┬──────────────────────────────┘
+                       │ HTTPS
+┌──────────────────────▼──────────────────────────────┐
+│              Next.js 16.2 (Turbopack)                │
+│                                                      │
+│  Server Components ──► Prisma ORM ──► PostgreSQL 16  │
+│  Server Actions    ──► Serializable Transactions     │
+│  proxy.ts          ──► Route Protection              │
+│  NextAuth v5       ──► Magic Link (Resend)           │
+└──────────────────────────────────────────────────────┘
+```
 
-**Demo Accounts:**
-| User | Email | Balance |
-|------|-------|---------|
-| Alice | `alice@demo.lovie.co` | $250.00 |
-| Bob | `bob@demo.lovie.co` | $500.00 |
-| Carol | `carol@demo.lovie.co` | $150.00 |
-| Dave | `dave@demo.lovie.co` | $750.00 |
+## Payment Flow
 
-**Quick Login (dev mode):** `http://localhost:3000/api/dev-login?email=alice@demo.lovie.co`
+```
+Alice creates request          Bob receives & pays           Atomic Transfer
+─────────────────────       ─────────────────────       ─────────────────────
+                                                        
+ /requests/new               /dashboard                  $transaction {
+  │                           │                            Bob.wallet  -= $42
+  ├─ Email: bob@demo          ├─ Sees Alice's $42          Alice.wallet += $42
+  ├─ Amount: $42.00           ├─ Clicks "Pay"              Transaction logs ×2
+  ├─ Note: "Pizza"            ├─ Confirm dialog            Request → PAID
+  │                           ├─ 2.5s processing          }
+  └─► Status: PENDING         └─► Status: PAID            isolationLevel:
+      Expires: 7 days              Balance updated          Serializable
+```
+
+## Request Status Lifecycle
+
+```
+         create()
+        ──────────► PENDING ──────────► PAID       (recipient pays)
+                      │  │
+                      │  └──────────► DECLINED   (recipient declines)
+                      │
+                      └─────────────► CANCELLED  (sender cancels)
+                      
+        7 days pass ► EXPIRED                     (check-on-read, no cron)
+```
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
-| Framework | Next.js 16.2 (App Router, Turbopack, Server Components) |
-| Language | TypeScript 5 (strict mode) |
-| Database | PostgreSQL 16 + Prisma 7 (PrismaPg adapter) |
-| Auth | NextAuth.js v5 (Magic Link via Resend) |
-| UI | shadcn/ui + Tailwind CSS 4 (Warm Neutral + Gold theme) |
-| Fonts | Geist Sans + Geist Mono |
-| Testing | Playwright (E2E, video recording) |
-| Deployment | Docker (multi-stage, non-root) |
-| AI Tools | **Claude Code** (Claude Opus 4.6) — spec writing, architecture, implementation |
+| Framework | Next.js 16.2 (App Router, Turbopack) |
+| Language | TypeScript 5 (strict) |
+| Database | PostgreSQL 16 + Prisma 7 |
+| Auth | NextAuth v5 (Magic Link) |
+| UI | shadcn/ui + Tailwind CSS 4 |
+| Testing | Playwright (E2E + video) |
+| Deploy | Docker (multi-stage) |
+| AI | Claude Code (Opus 4.6) |
 
-## Features
-
-- **Payment Requests:** Create, pay, decline, cancel with shareable links
-- **Wallet System:** Balance tracking, topup simulation, atomic transfers (Serializable transactions)
-- **Activity Feed:** Unified timeline of all financial activity with type filters
-- **Expiration:** 7-day TTL with live countdown, check-on-read pattern (no cron)
-- **Magic Link Auth:** Email-based, dev mode shows link inline (no email needed for testing)
-- **Premium UI:** Compact fintech dashboard, responsive (mobile + desktop)
-
-## Local Development
-
-### Prerequisites
-- Node.js 20.9+
-- pnpm 9+
-- PostgreSQL 16
-
-### Setup
+## Quick Start
 
 ```bash
-# 1. Clone
-git clone https://github.com/[your-username]/lovieco.git
-cd lovieco
-
-# 2. Install dependencies
+git clone https://github.com/Menesahin/lovieco-payment.git
+cd lovieco-payment
 pnpm install
-
-# 3. Configure environment
-cp .env.example .env
-# Edit .env with your DATABASE_URL
-
-# 4. Database setup
+cp .env.example .env        # Edit DATABASE_URL
 npx prisma migrate dev
-pnpm db:seed
-
-# 5. Run dev server
-pnpm dev
-# Open http://localhost:3000
+npx tsx prisma/seed.ts       # Demo users + data
+pnpm dev                     # http://localhost:3000
 ```
 
-## Running E2E Tests
+**Demo login:** `http://localhost:3000/api/dev-login?email=alice@demo.lovie.co`
+
+| User | Email | Balance |
+|------|-------|---------|
+| Alice | alice@demo.lovie.co | $250 |
+| Bob | bob@demo.lovie.co | $500 |
+| Carol | carol@demo.lovie.co | $150 |
+| Dave | dave@demo.lovie.co | $750 |
+
+## E2E Tests + Video Recording
 
 ```bash
-# Install Playwright browsers (first time)
 npx playwright install chromium
-
-# Run all tests with video recording
-pnpm test:e2e
-
-# Run specific test suite
-pnpm test:e2e -- --grep "dashboard"
-
-# View test report
-npx playwright show-report
-
-# Videos saved to test-results/
+npx playwright test e2e/scenarios --project=chromium
+npx playwright show-report    # View videos in browser
 ```
 
-## Docker Deployment
+5 scenario tests, 26 unit tests — all with video recording (`video: "on"`):
 
-```bash
-# Build and run (connects to your PostgreSQL)
-docker compose up --build
-
-# Run migrations
-docker compose run migrate
-
-# Seed demo data
-docker compose --profile seed run seed
-```
+| Scenario | Duration | What it tests |
+|----------|----------|---------------|
+| Full Payment Flow | ~19s | Topup → request → pay → balance verify |
+| Decline & Cancel | ~10s | Decline incoming, cancel outgoing |
+| Wallet Operations | ~11s | Topup, transaction history, filters |
+| Auth & Access | ~11s | Route guards, shareable link security |
+| Insufficient Funds | ~8s | Balance check, disabled pay, topup to unlock |
 
 ## Spec-Driven Process
 
-This project follows a spec-driven development workflow:
-
-1. **Constitution** (`specs/constitution.md`) — 12-section coding standards
-2. **Product Spec** (`specs/spec.md`) — Full feature specification with acceptance criteria
-3. **Architecture** (`specs/architecture/`) — System overview, data flows, state machine
-4. **ADRs** (`specs/adr/`) — 11 architecture decision records
-5. **UX** (`specs/ux/`) — User flows + ASCII mockups
-6. **Roadmap** (`specs/roadmap.md`) — Phases and milestones
-7. **Findings** (`specs/findings.md`) — QA observations
-
-## Architecture Decisions (ADR Summary)
-
-| # | Decision | Rationale |
-|---|---------|-----------|
-| 001 | Next.js 16.2 + Prisma 7 | Full-stack, type-safe, Turbopack performance |
-| 002 | Integer cents for money | No floating-point errors |
-| 003 | Check-on-read expiration | No cron, simpler deploy |
-| 004 | Nullable recipientId | Requests work before recipient signs up |
-| 005 | Shareable token vs ID | Prevents enumeration |
-| 006 | Server Actions over API | Zero boilerplate, auto CSRF |
-| 007 | Test auth bypass | E2E without email verification |
-| 008 | Docker multi-stage | Reproducible, non-root, healthcheck |
-| 009 | Email-only recipient | Phone deferred to v2 |
-| 010 | Serializable isolation | Prevents double-spend |
-| 011 | Wallet simulation | DB-level balance tracking |
-
-## Project Structure
-
 ```
-specs/          — Source of truth (20+ documents)
-prisma/         — Schema, migrations, seed
-src/app/        — Next.js App Router pages
-src/components/ — UI components (shadcn + custom)
-src/lib/        — Business logic, actions, repositories, guards
-e2e/            — Playwright E2E tests
+specs/
+├── constitution.md          # 12 coding standards (SOLID, Fintech, Next.js 16)
+├── spec.md                  # Full product spec with acceptance criteria
+├── architecture/            # System overview, data flows, state machine
+├── ux/                      # User flows + mockups
+├── adr/                     # 11 architecture decision records
+├── roadmap.md               # Phases & milestones
+├── findings.md              # QA observations
+└── e2e-scenarios.md         # Test journey documentation
 ```
 
-## AI Tools Used
+## Key Architecture Decisions
 
-**Claude Code** (Claude Opus 4.6, 1M context) was used throughout the entire development process:
-- Spec writing (constitution, product spec, ADRs, architecture docs)
-- Architecture planning and decision-making
-- Full implementation (all source code)
-- Bug diagnosis and resolution (Prisma 7/Turbopack compatibility)
-- UI/UX design and polish
-- E2E test suite
-- Docker configuration
-- Custom development skill (`/lovepay-dev`) with anti-pattern detection
+| Decision | Why |
+|----------|-----|
+| Integer cents (not float) | Zero precision errors on money |
+| Serializable transactions | Prevents double-spend, atomic wallet transfers |
+| Check-on-read expiration | No cron needed, simpler deploy |
+| Server Actions (not REST) | Type-safe, auto CSRF, zero boilerplate |
+| Wallet simulation | DB-level balance tracking makes payments meaningful |
+| `proxy.ts` (not middleware) | Next.js 16 rename, Node.js runtime only |
+
+## Docker
+
+```bash
+docker compose up --build    # App + PostgreSQL + auto-migrate
+```
 
 ---
 
-Built for the Lovie.co hiring assignment — 2026
+Built with **Claude Code** (Opus 4.6) for the Lovie.co hiring assignment — 2026
