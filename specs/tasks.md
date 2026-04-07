@@ -45,29 +45,29 @@
 
 ## Phase 1: Database + Auth
 
-- [ ] Write full Prisma schema (`prisma/schema.prisma`)
-  - [ ] User model
-  - [ ] Account model (NextAuth)
-  - [ ] Session model (NextAuth)
-  - [ ] VerificationToken model (NextAuth)
-  - [ ] PaymentRequest model with all fields and indexes
-  - [ ] RequestStatus enum
+- [x] Write full Prisma schema (`prisma/schema.prisma`)
+  - [x] User model
+  - [x] Account model (NextAuth)
+  - [x] Session model (NextAuth)
+  - [x] VerificationToken model (NextAuth)
+  - [x] PaymentRequest model with all fields and indexes
+  - [x] RequestStatus enum
 - [ ] Run `npx prisma migrate dev --name init`
-- [ ] Create `src/lib/db.ts` — Prisma client singleton (globalThis pattern)
-- [ ] Create `src/auth.ts` — NextAuth v5 config
-  - [ ] Resend provider
-  - [ ] PrismaAdapter
-  - [ ] Custom pages (signIn, verifyRequest, error)
-  - [ ] Session callback (include user.id)
-  - [ ] signIn event: orphan claim logic
-  - [ ] Conditional test CredentialsProvider (NODE_ENV=test)
-- [ ] Create `src/app/api/auth/[...nextauth]/route.ts`
-- [ ] Create `src/proxy.ts` — protect /dashboard, /requests, /settings (Next.js 16 replaces middleware.ts)
-- [ ] Create `src/lib/guards/require-auth.ts`
-- [ ] Create `src/app/(auth)/layout.tsx` — centered card layout
-- [ ] Create `src/app/(auth)/sign-in/page.tsx` — email input form
-- [ ] Create `src/app/(auth)/verify-request/page.tsx` — "Check your email"
-- [ ] Create `src/app/(auth)/error/page.tsx` — auth error display
+- [x] Create `src/lib/db.ts` — Prisma client singleton (globalThis + PrismaPg adapter for Prisma 7)
+- [x] Create `src/auth.ts` — NextAuth v5 config
+  - [x] Resend provider
+  - [x] PrismaAdapter
+  - [x] Custom pages (signIn, verifyRequest, error)
+  - [x] Session callback (include user.id)
+  - [x] signIn event: orphan claim logic
+  - [x] Conditional test CredentialsProvider (NODE_ENV=test)
+- [x] Create `src/app/api/auth/[...nextauth]/route.ts`
+- [x] Create `src/proxy.ts` — protect /dashboard, /requests, /settings (Next.js 16 proxy function)
+- [x] Create `src/lib/guards/require-auth.ts`
+- [x] Create `src/app/(auth)/layout.tsx` — centered card layout
+- [x] Create `src/app/(auth)/sign-in/page.tsx` — email input form
+- [x] Create `src/app/(auth)/verify-request/page.tsx` — "Check your email"
+- [x] Create `src/app/(auth)/error/page.tsx` — auth error display
 - [ ] Test magic link flow end-to-end manually
 - [ ] Commit: `feat: add database schema and auth system`
 
