@@ -119,13 +119,13 @@ npx playwright show-report    # View videos in browser
 
 5 scenario tests, 26 unit tests — all with video recording (`video: "on"`):
 
-| Scenario | Duration | What it tests |
-|----------|----------|---------------|
-| Full Payment Flow | ~19s | Topup → request → pay → balance verify |
-| Decline & Cancel | ~10s | Decline incoming, cancel outgoing |
-| Wallet Operations | ~11s | Topup, transaction history, filters |
-| Auth & Access | ~11s | Route guards, shareable link security |
-| Insufficient Funds | ~8s | Balance check, disabled pay, topup to unlock |
+| Scenario | Duration | What it tests | Video |
+|----------|----------|---------------|-------|
+| Full Payment Flow | ~19s | Topup → request → pay → balance verify | [Watch](test-results/scenarios-full-flow-Full-P-10cd1--Bob-pays-balances-verified-chromium/video.webm) |
+| Decline & Cancel | ~10s | Decline incoming, cancel outgoing | [Watch](test-results/scenarios-decline-cancel-f-174ee-creates-and-cancels-her-own-chromium/video.webm) |
+| Wallet Operations | ~11s | Topup, transaction history, filters | [Watch](test-results/scenarios-wallet-operation-ae70e-action-history-with-filters-chromium/video.webm) |
+| Auth & Access | ~11s | Route guards, shareable link security | [Watch](test-results/scenarios-auth-and-access--4244d-e-link-access-control-works-chromium/video.webm) |
+| Insufficient Funds | ~8s | Balance check, disabled pay, topup to unlock | [Watch](test-results/scenarios-insufficient-fun-bb5c7-ng-to-pay-expensive-request-chromium/video.webm) |
 
 ## Spec-Driven Process
 
