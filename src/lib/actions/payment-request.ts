@@ -46,14 +46,19 @@ export async function createRequest(formData: FormData) {
 }
 
 // ─── Pay Request (spec § 3.5, ADR-010) ───
+// DB-02 fix: sleep OUTSIDE transaction to minimize lock duration
 
 export async function payRequest(requestId: string) {
   const user = await requireAuth();
 
+  // Simulate payment processing BEFORE transaction (UI delay only)
+  await new Promise((resolve) => setTimeout(resolve, 2500));
+
+  // Atomic transaction: guard → balance check → transfer → audit → status
   const result = await prisma.$transaction(
     async (tx) => {
+      // a. Request guards (fail-fast)
       const request = await tx.paymentRequest.findUnique({ where: { id: requestId } });
-
       if (!request) return { success: false as const, error: "Request not found" };
       if (request.recipientId !== user.id) return { success: false as const, error: "You are not authorized to pay this request" };
       if (request.status !== "PENDING") return { success: false as const, error: "This request is no longer pending" };
@@ -62,21 +67,72 @@ export async function payRequest(requestId: string) {
         return { success: false as const, error: "This request has expired and can no longer be paid" };
       }
 
-      await new Promise((resolve) => setTimeout(resolve, 2500));
+      // b. Payer wallet — must exist and have sufficient balance
+      const payerWallet = await tx.wallet.findUnique({ where: { userId: user.id } });
+      if (!payerWallet || payerWallet.balanceCents < request.amountCents) {
+        return { success: false as const, error: "Insufficient funds. Add funds to pay this request." };
+      }
 
+      // c. Receiver wallet — create if doesn't exist
+      const receiverWallet = await tx.wallet.upsert({
+        where: { userId: request.senderId },
+        create: { userId: request.senderId, balanceCents: 0 },
+        update: {},
+      });
+
+      // d. Atomic balance transfer (decrement/increment = race-condition safe)
+      await tx.wallet.update({
+        where: { id: payerWallet.id },
+        data: { balanceCents: { decrement: request.amountCents } },
+      });
+      await tx.wallet.update({
+        where: { id: receiverWallet.id },
+        data: { balanceCents: { increment: request.amountCents } },
+      });
+
+      // e. Audit trail — two transaction records
+      const payerBalanceAfter = payerWallet.balanceCents - request.amountCents;
+      const receiverBalanceAfter = receiverWallet.balanceCents + request.amountCents;
+
+      await tx.transaction.createMany({
+        data: [
+          {
+            type: "PAYMENT_SENT",
+            amountCents: -request.amountCents,
+            balanceAfter: payerBalanceAfter,
+            description: `Payment for: ${request.note ?? "Payment request"}`,
+            userId: user.id,
+            requestId,
+          },
+          {
+            type: "PAYMENT_RECEIVED",
+            amountCents: request.amountCents,
+            balanceAfter: receiverBalanceAfter,
+            description: `Received payment: ${request.note ?? "Payment request"}`,
+            userId: request.senderId,
+            requestId,
+          },
+        ],
+      });
+
+      // f. Update request status
       await tx.paymentRequest.update({
         where: { id: requestId },
         data: { status: "PAID", paidAt: new Date() },
       });
 
-      logger.info({ requestId, userId: user.id }, "payment_request_paid");
-      return { success: true as const };
+      logger.info(
+        { requestId, payerId: user.id, receiverId: request.senderId, amount: request.amountCents },
+        "payment_completed"
+      );
+
+      return { success: true as const, newBalance: payerBalanceAfter };
     },
-    { isolationLevel: "Serializable", timeout: 10000 }
+    { isolationLevel: "Serializable", timeout: 5000 }
   );
 
   if (result.success) {
-    revalidatePath("/dashboard");
+    revalidatePath("/", "layout");
     revalidatePath(`/requests/${requestId}`);
   }
   return result;

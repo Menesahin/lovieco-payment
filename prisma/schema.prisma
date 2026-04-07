@@ -22,6 +22,8 @@ model User {
 
   sentRequests     PaymentRequest[] @relation("SentRequests")
   receivedRequests PaymentRequest[] @relation("ReceivedRequests")
+  wallet           Wallet?
+  transactions     Transaction[]
 }
 
 model Account {
@@ -91,8 +93,43 @@ model PaymentRequest {
   declinedAt  DateTime?
   cancelledAt DateTime?
 
+  transactions Transaction[]
+
   @@index([senderId, status])
   @@index([recipientId, status])
   @@index([recipientEmail])
   @@index([status, expiresAt])
+}
+
+// ─── Wallet & Transaction Models ───
+
+model Wallet {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id])
+  balanceCents Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum TransactionType {
+  TOPUP
+  PAYMENT_SENT
+  PAYMENT_RECEIVED
+}
+
+model Transaction {
+  id           String          @id @default(cuid())
+  type         TransactionType
+  amountCents  Int
+  balanceAfter Int
+  description  String
+  userId       String
+  user         User            @relation(fields: [userId], references: [id])
+  requestId    String?
+  request      PaymentRequest? @relation(fields: [requestId], references: [id])
+  createdAt    DateTime        @default(now())
+
+  @@index([userId, createdAt])
+  @@index([requestId])
 }

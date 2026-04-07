@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 // Server actions passed as props from page.tsx to avoid Turbopack node:module bundling
 import type { RequestDTO } from "@/lib/dto/payment-request.dto";
+import { formatCents } from "@/lib/utils/currency";
 import { StatusBadge } from "@/components/dashboard/status-badge";
 import { CountdownTimer } from "./countdown-timer";
 import { Button } from "@/components/ui/button";
@@ -22,12 +23,13 @@ import {
 interface RequestDetailProps {
   request: RequestDTO;
   role: "sender" | "recipient";
+  walletBalance?: number;
   onPay: (id: string) => Promise<{ success: boolean; error?: string }>;
   onDecline: (id: string) => Promise<{ success: boolean; error?: string }>;
   onCancel: (id: string) => Promise<{ success: boolean; error?: string }>;
 }
 
-export function RequestDetail({ request, role, onPay, onDecline, onCancel }: RequestDetailProps) {
+export function RequestDetail({ request, role, walletBalance, onPay, onDecline, onCancel }: RequestDetailProps) {
   const router = useRouter();
   const [isPaying, startPay] = useTransition();
   const [isDeclining, startDecline] = useTransition();
@@ -161,17 +163,36 @@ export function RequestDetail({ request, role, onPay, onDecline, onCancel }: Req
 
         {/* Actions */}
         <div className="mt-6 space-y-3">
-          {/* Incoming: Pay + Decline */}
+          {/* Incoming: Balance + Pay + Decline */}
           {role === "recipient" && isPending && !isExpired && (
-            <div className="flex gap-3">
-              <Button className="flex-1" onClick={() => setConfirmAction("pay")} disabled={isPaying}>
-                {isPaying ? <LoadingSpinner className="mr-2" /> : null}
-                Pay {request.amountFormatted}
-              </Button>
-              <Button variant="outline" className="flex-1" onClick={() => setConfirmAction("decline")} disabled={isDeclining}>
-                Decline
-              </Button>
-            </div>
+            <>
+              {walletBalance !== undefined && (
+                <div className={`rounded-lg p-3 text-sm ${
+                  walletBalance < request.amountCents
+                    ? "bg-red-50 text-red-800"
+                    : "bg-green-50 text-green-800"
+                }`}>
+                  <span className="font-medium">Your balance:</span>{" "}
+                  {formatCents(walletBalance)}
+                  {walletBalance < request.amountCents && (
+                    <span className="block mt-1 text-xs">Insufficient funds. Add funds to pay this request.</span>
+                  )}
+                </div>
+              )}
+              <div className="flex gap-3">
+                <Button
+                  className="flex-1"
+                  onClick={() => setConfirmAction("pay")}
+                  disabled={isPaying || (walletBalance !== undefined && walletBalance < request.amountCents)}
+                >
+                  {isPaying ? <LoadingSpinner className="mr-2" /> : null}
+                  Pay {request.amountFormatted}
+                </Button>
+                <Button variant="outline" className="flex-1" onClick={() => setConfirmAction("decline")} disabled={isDeclining}>
+                  Decline
+                </Button>
+              </div>
+            </>
           )}
 
           {/* Outgoing: Cancel + Share */}
