@@ -35,6 +35,7 @@
 - Convention files required: `loading.tsx`, `error.tsx`, `not-found.tsx` for each route group
 - **`proxy.ts`** instead of `middleware.ts` for network boundary logic (Node.js runtime only)
 - **Turbopack is default** — no custom webpack configs, 2-5x faster builds
+- **Server Action import rule**: Client Components must NEVER directly import Server Action files that use Prisma. Pass server actions as props from Server Components (page.tsx → client component).
 - **React Compiler is stable** and built-in — no manual memoization needed
 - Dynamic import for components >50KB that are not above-the-fold
 - `next/image` for all images (auto WebP, lazy loading, responsive sizes — width/height optional for remote)
@@ -46,6 +47,7 @@
 
 ## 3. Prisma Best Practices
 
+- **Prisma 7 + Turbopack**: Use `prisma-client-js` generator (NOT `prisma-client`). Requires `PrismaPg` driver adapter in PrismaClient constructor. `prisma.config.ts` URL is CLI-only.
 - **Singleton pattern** via `globalThis` — prevents connection pool exhaustion on hot-reload
 - Never call `$disconnect()` after requests — reuse connections across warm invocations
 - **`$transaction()`** for all multi-step operations — automatic rollback on failure

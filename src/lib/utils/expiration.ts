@@ -1,7 +1,4 @@
-// ADR-003: Check-on-read expiration pattern — no cron needed.
-
-import { prisma } from "@/lib/db";
-import type { PaymentRequest } from "@/generated/prisma/client";
+// Client-safe expiration utilities — no Prisma, no server-only imports
 
 export function isExpired(expiresAt: Date): boolean {
   return expiresAt < new Date();
@@ -31,23 +28,4 @@ export function getExpirationPercentage(
   const total = expiresAt.getTime() - createdAt.getTime();
   const elapsed = Date.now() - createdAt.getTime();
   return Math.min(100, Math.max(0, (elapsed / total) * 100));
-}
-
-export async function markExpiredOnRead<
-  T extends Pick<PaymentRequest, "id" | "status" | "expiresAt">,
->(requests: T[]): Promise<T[]> {
-  const expiredIds = requests
-    .filter((r) => r.status === "PENDING" && isExpired(r.expiresAt))
-    .map((r) => r.id);
-
-  if (expiredIds.length > 0) {
-    await prisma.paymentRequest.updateMany({
-      where: { id: { in: expiredIds }, status: "PENDING" },
-      data: { status: "EXPIRED" },
-    });
-  }
-
-  return requests.map((r) =>
-    expiredIds.includes(r.id) ? { ...r, status: "EXPIRED" as const } : r
-  );
 }

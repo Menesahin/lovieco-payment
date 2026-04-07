@@ -1,4 +1,4 @@
-import type { RequestStatus } from "@/generated/prisma/client";
+import type { RequestStatus } from "@prisma/client";
 
 export function requirePending(status: RequestStatus): {
   success: true;
