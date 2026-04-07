@@ -19,9 +19,9 @@ dist/
 src/generated/
 
 # testing
-test-results/
 playwright-report/
 blob-report/
+# test-results/ is tracked — contains E2E video recordings for submission
 
 # ide
 .idea/
