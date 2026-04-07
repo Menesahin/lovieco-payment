@@ -7,7 +7,7 @@ export default async function SignInPage() {
   const session = await auth();
   if (session?.user) redirect("/dashboard");
 
-  const isDev = process.env.NODE_ENV !== "production";
+  const isDev = process.env.NODE_ENV !== "production" || process.env.DEV_MODE === "true";
 
   return (
     <div className="rounded-2xl border border-stone-200 bg-white p-10 shadow-sm">

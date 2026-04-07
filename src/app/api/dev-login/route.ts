@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 
 // DEV ONLY — direct login without magic link
 export async function GET(request: NextRequest) {
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && process.env.DEV_MODE !== "true") {
     return NextResponse.json({ error: "Not available" }, { status: 404 });
   }
 

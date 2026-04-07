@@ -11,7 +11,7 @@ export async function requestMagicLink(email: string): Promise<{ success: boolea
   }
 
   // In dev mode, retrieve the stored callback URL
-  if (process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production" || process.env.DEV_MODE === "true") {
     const record = await prisma.verificationToken.findFirst({
       where: { identifier: `dev_url:${email}` },
       orderBy: { expires: "desc" },

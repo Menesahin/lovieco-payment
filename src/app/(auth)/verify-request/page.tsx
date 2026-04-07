@@ -11,7 +11,7 @@ export default async function VerifyRequestPage({
 
   // Dev mode: fetch the full callback URL we stored in sendVerificationRequest
   let magicLink: string | null = null;
-  if (process.env.NODE_ENV !== "production" && email) {
+  if ((process.env.NODE_ENV !== "production" || process.env.DEV_MODE === "true") && email) {
     const record = await prisma.verificationToken.findFirst({
       where: { identifier: `dev_url:${email}` },
       orderBy: { expires: "desc" },
