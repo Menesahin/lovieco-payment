@@ -1,6 +1,5 @@
-import { signIn } from "@/auth";
+import { signIn, auth } from "@/auth";
 import { redirect } from "next/navigation";
-import { auth } from "@/auth";
 
 export default async function SignInPage() {
   const session = await auth();
@@ -22,7 +21,12 @@ export default async function SignInPage() {
         action={async (formData) => {
           "use server";
           const email = formData.get("email") as string;
-          await signIn("resend", { email, redirectTo: `/verify-request?email=${encodeURIComponent(email)}` });
+          try {
+            await signIn("resend", { email, redirect: false });
+          } catch {
+            // signIn throws on redirect — expected behavior
+          }
+          redirect(`/verify-request?email=${encodeURIComponent(email)}`);
         }}
       >
         <label htmlFor="email" className="mb-2 block text-sm font-medium">
@@ -52,7 +56,7 @@ export default async function SignInPage() {
       {process.env.NODE_ENV !== "production" && (
         <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
           <p className="text-xs font-medium text-amber-800">
-            🧪 Test Mode — After submitting, the magic link will be shown on the next page.
+            🧪 Test Mode — Magic link will be shown on the next page. No email sent.
           </p>
         </div>
       )}
