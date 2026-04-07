@@ -102,24 +102,24 @@ export function FeatureShowcase() {
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => (
-            <ScrollFadeIn key={f.title} delay={i * 120}>
-              <div className="group rounded-2xl border border-stone-200/80 bg-white overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-stone-200/50 hover:-translate-y-1 hover:border-stone-300/80">
+            <ScrollFadeIn key={f.title} delay={i * 120} className="flex">
+              <div className="group flex flex-col rounded-2xl border border-stone-200/80 bg-white overflow-hidden transition-all duration-500 hover:shadow-xl hover:shadow-stone-200/50 hover:-translate-y-1 hover:border-stone-300/80">
                 {/* Gradient visual area with mini mockup */}
-                <div className={`relative bg-gradient-to-br ${f.gradient} p-6 pb-5`}>
-                  <div className="mx-auto max-w-[180px] transition-transform duration-500 group-hover:scale-[1.03]">
+                <div className={`relative bg-gradient-to-br ${f.gradient} p-6 pb-5 flex items-center justify-center min-h-[140px]`}>
+                  <div className="w-full max-w-[180px] transition-transform duration-500 group-hover:scale-[1.03]">
                     {f.mockup}
                   </div>
                 </div>
 
                 {/* Content */}
-                <div className="p-6 pt-5">
+                <div className="p-6 pt-5 flex-1 flex flex-col">
                   <div className="flex items-center gap-3">
-                    <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${f.iconBg} transition-all duration-300`}>
+                    <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${f.iconBg} transition-all duration-300`}>
                       {f.icon}
                     </div>
                     <h3 className="font-semibold text-lg">{f.title}</h3>
                   </div>
-                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
+                  <p className="mt-3 text-sm text-muted-foreground leading-relaxed flex-1">
                     {f.description}
                   </p>
                 </div>

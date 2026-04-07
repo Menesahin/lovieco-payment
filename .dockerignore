@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.gitignore
+test-results
+playwright-report
+e2e
+.env
+.env.local
+specs
+*.md
+!README.md
+.idea
+.vscode
+.DS_Store
