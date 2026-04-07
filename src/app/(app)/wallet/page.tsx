@@ -4,74 +4,133 @@ import { formatCents } from "@/lib/utils/currency";
 import type { TransactionDTO } from "@/lib/dto/wallet.dto";
 import { TopupModal } from "@/components/wallet/topup-modal";
 import { topupWallet } from "@/lib/actions/wallet";
+import Link from "next/link";
 
 export default async function WalletPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; type?: string }>;
 }) {
   const user = await requireAuth();
   const params = await searchParams;
   const page = Math.max(1, Number(params.page) || 1);
+  const typeFilter = params.type;
 
   const [wallet, txResult] = await Promise.all([
     walletRepository.getOrCreateWallet(user.id),
     walletRepository.getTransactions(user.id, page, 10),
   ]);
 
-  const typeLabels: Record<string, { label: string; color: string }> = {
-    TOPUP: { label: "Top Up", color: "text-blue-700 bg-blue-50" },
-    PAYMENT_SENT: { label: "Sent", color: "text-red-700 bg-red-50" },
-    PAYMENT_RECEIVED: { label: "Received", color: "text-green-700 bg-green-50" },
+  // Client-side filter (for now — could move to repository for DB-level filtering)
+  const filteredData = typeFilter
+    ? txResult.data.filter((tx: TransactionDTO) => tx.type === typeFilter)
+    : txResult.data;
+
+  const typeConfig: Record<string, { label: string; dotColor: string }> = {
+    TOPUP: { label: "Top Up", dotColor: "bg-blue-500" },
+    PAYMENT_SENT: { label: "Sent", dotColor: "bg-red-500" },
+    PAYMENT_RECEIVED: { label: "Received", dotColor: "bg-emerald-500" },
   };
 
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
+    <div className="mx-auto max-w-3xl space-y-6">
       {/* Balance Card */}
-      <div className="rounded-2xl border bg-card p-8 text-center">
-        <p className="text-sm text-muted-foreground">Available Balance</p>
-        <p className="mt-2 text-4xl font-bold">{formatCents(wallet.balanceCents)}</p>
-        <div className="mt-4">
+      <div className="rounded-2xl bg-gradient-to-br from-stone-900 to-stone-800 p-8 text-white shadow-lg">
+        <p className="text-sm text-stone-400 font-medium">Available Balance</p>
+        <p className="mt-2 text-4xl font-bold font-mono tracking-tight">
+          {formatCents(wallet.balanceCents)}
+        </p>
+        <div className="mt-5">
           <TopupModal onTopup={topupWallet} />
         </div>
       </div>
 
       {/* Transaction History */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold">Transaction History</h2>
-        {txResult.data.length === 0 ? (
-          <div className="rounded-xl border bg-card p-8 text-center text-muted-foreground">
-            No transactions yet. Add funds to get started.
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold">Transactions</h2>
+          {/* Type Filter */}
+          <div className="flex gap-1.5">
+            <FilterPill href="/wallet" label="All" active={!typeFilter} />
+            <FilterPill href="/wallet?type=TOPUP" label="Top Up" active={typeFilter === "TOPUP"} />
+            <FilterPill href="/wallet?type=PAYMENT_SENT" label="Sent" active={typeFilter === "PAYMENT_SENT"} />
+            <FilterPill href="/wallet?type=PAYMENT_RECEIVED" label="Received" active={typeFilter === "PAYMENT_RECEIVED"} />
+          </div>
+        </div>
+
+        {filteredData.length === 0 ? (
+          <div className="rounded-2xl border border-stone-200 bg-white p-12 text-center">
+            <p className="text-muted-foreground">
+              {typeFilter ? "No transactions match this filter." : "No transactions yet. Add funds to get started."}
+            </p>
           </div>
         ) : (
-          <div className="space-y-2">
-            {txResult.data.map((tx: TransactionDTO) => {
-              const config = typeLabels[tx.type] ?? { label: tx.type, color: "" };
-              return (
-                <div key={tx.id} className="flex items-center justify-between rounded-xl border bg-card p-4">
-                  <div>
-                    <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-semibold ${config.color}`}>
-                      {config.label}
-                    </span>
-                    <p className="mt-1 text-sm text-muted-foreground">{tx.description}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {new Date(tx.createdAt).toLocaleDateString("en-US", {
-                        month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit",
-                      })}
-                    </p>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block rounded-2xl border border-stone-200 bg-white overflow-hidden shadow-sm">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-stone-100 bg-stone-50/50">
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Date</th>
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Type</th>
+                    <th className="px-5 py-3 text-left text-xs font-semibold text-muted-foreground uppercase tracking-wider">Description</th>
+                    <th className="px-5 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">Amount</th>
+                    <th className="px-5 py-3 text-right text-xs font-semibold text-muted-foreground uppercase tracking-wider">Balance</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-stone-100">
+                  {filteredData.map((tx: TransactionDTO) => {
+                    const config = typeConfig[tx.type] ?? { label: tx.type, dotColor: "bg-stone-400" };
+                    return (
+                      <tr key={tx.id} className="hover:bg-stone-50/50 transition-colors">
+                        <td className="px-5 py-3.5 text-muted-foreground whitespace-nowrap">
+                          {new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                        </td>
+                        <td className="px-5 py-3.5">
+                          <span className="inline-flex items-center gap-1.5">
+                            <span className={`h-2 w-2 rounded-full ${config.dotColor}`} />
+                            <span className="font-medium">{config.label}</span>
+                          </span>
+                        </td>
+                        <td className="px-5 py-3.5 text-muted-foreground max-w-[200px] truncate">{tx.description}</td>
+                        <td className={`px-5 py-3.5 text-right font-mono font-semibold ${tx.amountCents >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                          {tx.amountCents >= 0 ? "+" : ""}{formatCents(Math.abs(tx.amountCents))}
+                        </td>
+                        <td className="px-5 py-3.5 text-right font-mono text-muted-foreground">
+                          {tx.balanceAfterFormatted}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="space-y-2 md:hidden">
+              {filteredData.map((tx: TransactionDTO) => {
+                const config = typeConfig[tx.type] ?? { label: tx.type, dotColor: "bg-stone-400" };
+                return (
+                  <div key={tx.id} className="rounded-xl border border-stone-200 bg-white p-4">
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1.5 text-sm">
+                        <span className={`h-2 w-2 rounded-full ${config.dotColor}`} />
+                        <span className="font-medium">{config.label}</span>
+                      </span>
+                      <span className={`text-sm font-mono font-semibold ${tx.amountCents >= 0 ? "text-emerald-600" : "text-red-600"}`}>
+                        {tx.amountCents >= 0 ? "+" : ""}{formatCents(Math.abs(tx.amountCents))}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-muted-foreground truncate">{tx.description}</p>
+                    <div className="mt-1.5 flex justify-between text-[11px] text-muted-foreground">
+                      <span>{new Date(tx.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}</span>
+                      <span>Bal: {tx.balanceAfterFormatted}</span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <p className={`text-sm font-semibold ${tx.amountCents >= 0 ? "text-green-700" : "text-red-700"}`}>
-                      {tx.amountCents >= 0 ? "+" : ""}{formatCents(Math.abs(tx.amountCents))}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      Bal: {tx.balanceAfterFormatted}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </>
         )}
 
         {/* Pagination */}
@@ -82,19 +141,34 @@ export default async function WalletPage({
             </p>
             <div className="flex gap-2">
               {page > 1 && (
-                <a href={`/wallet?page=${page - 1}`} className="rounded-lg border px-3 py-1.5 text-sm hover:bg-muted">
+                <Link href={`/wallet?page=${page - 1}${typeFilter ? `&type=${typeFilter}` : ""}`} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-50 transition-colors">
                   Previous
-                </a>
+                </Link>
               )}
               {page < txResult.totalPages && (
-                <a href={`/wallet?page=${page + 1}`} className="rounded-lg border px-3 py-1.5 text-sm hover:bg-muted">
+                <Link href={`/wallet?page=${page + 1}${typeFilter ? `&type=${typeFilter}` : ""}`} className="rounded-lg border border-stone-300 px-3 py-1.5 text-sm hover:bg-stone-50 transition-colors">
                   Next
-                </a>
+                </Link>
               )}
             </div>
           </div>
         )}
       </div>
     </div>
+  );
+}
+
+function FilterPill({ href, label, active }: { href: string; label: string; active: boolean }) {
+  return (
+    <Link
+      href={href}
+      className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+        active
+          ? "bg-stone-900 text-white"
+          : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+      }`}
+    >
+      {label}
+    </Link>
   );
 }

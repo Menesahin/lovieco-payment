@@ -1,24 +1,31 @@
 import { signIn } from "@/auth";
+import { redirect } from "next/navigation";
+import { auth } from "@/auth";
 
-export default function SignInPage() {
+export default async function SignInPage() {
+  const session = await auth();
+  if (session?.user) redirect("/dashboard");
+
   return (
-    <div className="rounded-2xl border bg-card p-8 shadow-sm">
-      <div className="mb-6 text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Welcome back</h1>
+    <div className="rounded-2xl border border-stone-200 bg-white p-10 shadow-sm">
+      <div className="mb-8 text-center">
+        <div className="mx-auto mb-4 h-12 w-12 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center shadow-sm">
+          <span className="text-white font-bold text-lg">L</span>
+        </div>
+        <h1 className="text-2xl font-semibold tracking-tight">Welcome to LovePay</h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Sign in with your email to continue
+          Enter your email to sign in or create an account
         </p>
       </div>
+
       <form
         action={async (formData) => {
           "use server";
-          await signIn("resend", { ...Object.fromEntries(formData), redirectTo: "/dashboard" });
+          const email = formData.get("email") as string;
+          await signIn("resend", { email, redirectTo: `/verify-request?email=${encodeURIComponent(email)}` });
         }}
       >
-        <label
-          htmlFor="email"
-          className="mb-1.5 block text-sm font-medium text-foreground"
-        >
+        <label htmlFor="email" className="mb-2 block text-sm font-medium">
           Email address
         </label>
         <input
@@ -28,18 +35,27 @@ export default function SignInPage() {
           required
           autoFocus
           placeholder="you@example.com"
-          className="mb-4 w-full rounded-lg border bg-background px-3 py-2.5 text-sm outline-none ring-offset-background focus:ring-2 focus:ring-primary/20 focus:border-primary transition-colors"
+          className="mb-5 w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition-all duration-200"
         />
         <button
           type="submit"
-          className="w-full rounded-lg bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground hover:bg-primary/90 transition-colors"
+          className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-medium text-primary-foreground hover:bg-neutral-800 transition-all duration-200 shadow-sm"
         >
-          Send Magic Link
+          Continue with Email
         </button>
       </form>
-      <p className="mt-4 text-center text-xs text-muted-foreground">
-        We&apos;ll email you a link to sign in. No password needed.
+
+      <p className="mt-5 text-center text-xs text-muted-foreground">
+        We&apos;ll send you a magic link to sign in. No password needed.
       </p>
+
+      {process.env.NODE_ENV !== "production" && (
+        <div className="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
+          <p className="text-xs font-medium text-amber-800">
+            🧪 Test Mode — After submitting, the magic link will be shown on the next page.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
