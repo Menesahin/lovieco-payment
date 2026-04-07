@@ -191,98 +191,98 @@
 
 ## Phase 9: Docker + Deploy
 
-- [ ] Create `Dockerfile` (multi-stage: deps → build → runner)
-  - [ ] node:20-alpine base
-  - [ ] Non-root user (nextjs:nodejs)
-  - [ ] Health check
-  - [ ] Standalone output copy
-- [ ] Create `docker-compose.yml`
-  - [ ] app service (port 3000)
-  - [ ] db service (postgres:16-alpine, named volume)
-  - [ ] migrate service (prisma migrate deploy)
-  - [ ] Internal network
-  - [ ] Health checks + depends_on
-- [ ] Create `.dockerignore`
-- [ ] Create `.env.example` with all required variables
-- [ ] Test locally: `docker compose up --build`
-- [ ] Verify health checks pass
-- [ ] Deploy to VPS
+- [x] Create `Dockerfile` (multi-stage: deps → build → runner)
+  - [x] node:20-alpine base
+  - [x] Non-root user (nextjs:nodejs)
+  - [x] Health check
+  - [x] Standalone output copy
+- [x] Create `docker-compose.yml`
+  - [x] app service (port 3000)
+  - [x] db service (postgres:16-alpine, named volume)
+  - [x] migrate service (prisma migrate deploy)
+  - [x] Internal network
+  - [x] Health checks + depends_on
+- [x] Create `.dockerignore`
+- [x] Create `.env.example` with all required variables
+- [x] Test locally: `docker compose up --build`
+- [x] Verify health checks pass
+- [x] Deploy to VPS
 - [ ] Configure Nginx (SSL, reverse proxy)
-- [ ] Run production migration
-- [ ] Smoke test on public URL
-- [ ] Commit: `chore: add Docker deployment configuration`
+- [x] Run production migration
+- [x] Smoke test on public URL
+- [x] Commit: `chore: add Docker deployment configuration`
 
 ---
 
 ## Phase 10: E2E Tests
 
-- [ ] Create `playwright.config.ts`
-  - [ ] video: "on"
-  - [ ] Desktop Chrome + Mobile iPhone 14 projects
-  - [ ] webServer config for pnpm dev
+- [x] Create `playwright.config.ts`
+  - [x] video: "on"
+  - [x] Desktop Chrome + Mobile iPhone 14 projects
+  - [x] webServer config for pnpm dev
 - [ ] Create `e2e/global-setup.ts` — DB cleanup before tests
-- [ ] Create `e2e/helpers/auth.ts` — `loginAs(page, email)` helper
-- [ ] Create `e2e/helpers/seed.ts` — Test data factory functions
-- [ ] Write `e2e/auth.spec.ts`
-  - [ ] Should show sign-in page for unauthenticated users
-  - [ ] Should redirect to dashboard after sign-in
-  - [ ] Should protect dashboard route
+- [x] Create `e2e/helpers/auth.ts` — `loginAs(page, email)` helper
+- [x] Create `e2e/helpers/seed.ts` — Test data factory functions
+- [x] Write `e2e/auth.spec.ts`
+  - [x] Should show sign-in page for unauthenticated users
+  - [x] Should redirect to dashboard after sign-in
+  - [x] Should protect dashboard route
   - [ ] Should sign out successfully
-- [ ] Write `e2e/create-request.spec.ts`
-  - [ ] Should create request with valid inputs
-  - [ ] Should show validation errors for invalid email
+- [x] Write `e2e/create-request.spec.ts`
+  - [x] Should create request with valid inputs
+  - [x] Should show validation errors for invalid email
   - [ ] Should show validation errors for invalid amount
   - [ ] Should prevent self-request
   - [ ] Should redirect to detail page after creation
-- [ ] Write `e2e/dashboard.spec.ts`
-  - [ ] Should show incoming requests tab by default
+- [x] Write `e2e/dashboard.spec.ts`
+  - [x] Should show incoming requests tab by default
   - [ ] Should switch to outgoing tab
-  - [ ] Should filter by status
+  - [x] Should filter by status
   - [ ] Should search by email
   - [ ] Should show empty state when no requests
   - [ ] Should paginate when > 10 requests
-- [ ] Write `e2e/pay-request.spec.ts`
-  - [ ] Should show confirmation dialog
+- [x] Write `e2e/pay-request.spec.ts`
+  - [x] Should show confirmation dialog
   - [ ] Should show loading state for 2-3 seconds
-  - [ ] Should show success state
-  - [ ] Should update status to Paid
+  - [x] Should show success state
+  - [x] Should update status to Paid
   - [ ] Should reflect on sender's dashboard
-- [ ] Write `e2e/decline-request.spec.ts`
-  - [ ] Should decline request and update status
-  - [ ] Should redirect to dashboard
-- [ ] Write `e2e/cancel-request.spec.ts`
-  - [ ] Should cancel outgoing request
-  - [ ] Should redirect to dashboard
-- [ ] Write `e2e/expiration.spec.ts`
-  - [ ] Should show expired badge for expired requests
-  - [ ] Should disable Pay button for expired requests
+- [x] Write `e2e/decline-request.spec.ts`
+  - [x] Should decline request and update status
+  - [x] Should redirect to dashboard
+- [x] Write `e2e/cancel-request.spec.ts`
+  - [x] Should cancel outgoing request
+  - [x] Should redirect to dashboard
+- [x] Write `e2e/expiration.spec.ts`
+  - [x] Should show expired badge for expired requests
+  - [x] Should disable Pay button for expired requests
   - [ ] Should show countdown timer for pending requests
-- [ ] Write `e2e/share-link.spec.ts`
-  - [ ] Should show read-only view for unauthenticated users
-  - [ ] Should show actions for authenticated recipient
-  - [ ] Should show 404 for invalid token
-- [ ] Write `e2e/responsive.spec.ts`
-  - [ ] Should show mobile layout on small viewport
-  - [ ] Should show bottom navigation on mobile
-  - [ ] Should show sidebar on desktop
-- [ ] Run full test suite: `pnpm test:e2e`
-- [ ] Verify video files generated in `test-results/`
-- [ ] Commit: `test: add comprehensive E2E test suite with video recording`
+- [x] Write `e2e/share-link.spec.ts`
+  - [x] Should show read-only view for unauthenticated users
+  - [x] Should show actions for authenticated recipient
+  - [x] Should show 404 for invalid token
+- [x] Write `e2e/responsive.spec.ts`
+  - [x] Should show mobile layout on small viewport
+  - [x] Should show bottom navigation on mobile
+  - [x] Should show sidebar on desktop
+- [x] Run full test suite: `pnpm test:e2e`
+- [x] Verify video files generated in `test-results/`
+- [x] Commit: `test: add comprehensive E2E test suite with video recording`
 
 ---
 
 ## Phase 11: Documentation + Submission
 
-- [ ] Write `README.md`
-  - [ ] Project overview
-  - [ ] Live demo URL
-  - [ ] Tech stack
-  - [ ] AI tools used
-  - [ ] Local development setup instructions
-  - [ ] How to run E2E tests
-  - [ ] Demo user credentials
-  - [ ] Spec-Kit artifacts reference
-- [ ] Write `specs/findings.md` — QA observations, bugs found, edge cases discovered
+- [x] Write `README.md`
+  - [x] Project overview
+  - [x] Live demo URL
+  - [x] Tech stack
+  - [x] AI tools used
+  - [x] Local development setup instructions
+  - [x] How to run E2E tests
+  - [x] Demo user credentials
+  - [x] Spec-Kit artifacts reference
+- [x] Write `specs/findings.md` — QA observations, bugs found, edge cases discovered
 - [ ] Mark all tasks as [x] in this file
 - [ ] Verify all spec-kit artifacts present in repo
 - [ ] Final commit + push
