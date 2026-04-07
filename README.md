@@ -4,6 +4,12 @@
 
 **Live Demo:** [http://158.220.112.110:3006](http://158.220.112.110:3006)
 
+### E2E Demo — Full Payment Flow
+
+https://github.com/Menesahin/lovieco-payment/raw/main/docs/videos/full-payment-flow.mp4
+
+> Alice tops up wallet → creates $42 request to Bob → Bob pays → atomic balance transfer → both dashboards updated
+
 ## Why This Architecture?
 
 This is a **rapid prototype** built in a few hours to demonstrate spec-driven development and fintech domain knowledge. We intentionally chose a **monolithic Next.js architecture** for speed of delivery.
@@ -127,26 +133,26 @@ npx playwright show-report    # View videos in browser
 | Auth & Access | ~11s | Route guards, shareable link security |
 | Insufficient Funds | ~8s | Balance check, disabled pay, topup to unlock |
 
-### Full Payment Flow — E2E Recording
-
-<video src="test-results/scenarios-full-flow-Full-P-10cd1--Bob-pays-balances-verified-chromium/video.webm" controls width="100%"></video>
-
-> Alice tops up → creates $42 request to Bob → Bob pays → balances verified
+### E2E Test Recordings
 
 <details>
-<summary>More test recordings</summary>
+<summary>Click to see all test videos</summary>
 
 **Decline & Cancel Flow**
-<video src="test-results/scenarios-decline-cancel-f-174ee-creates-and-cancels-her-own-chromium/video.webm" controls width="100%"></video>
+
+https://github.com/Menesahin/lovieco-payment/raw/main/docs/videos/decline-cancel-ee-creates-and-cancels-her-own.mp4
 
 **Auth & Access Control**
-<video src="test-results/scenarios-auth-and-access--4244d-e-link-access-control-works-chromium/video.webm" controls width="100%"></video>
+
+https://github.com/Menesahin/lovieco-payment/raw/main/docs/videos/auth-and-access-d-e-link-access-control-works.mp4
 
 **Wallet Operations**
-<video src="test-results/scenarios-wallet-operation-ae70e-action-history-with-filters-chromium/video.webm" controls width="100%"></video>
+
+https://github.com/Menesahin/lovieco-payment/raw/main/docs/videos/wallet-operationaction-history-with-filters.mp4
 
 **Insufficient Funds Guard**
-<video src="test-results/scenarios-insufficient-fun-bb5c7-ng-to-pay-expensive-request-chromium/video.webm" controls width="100%"></video>
+
+https://github.com/Menesahin/lovieco-payment/raw/main/docs/videos/insufficient-funng-to-pay-expensive-request.mp4
 
 </details>
 
