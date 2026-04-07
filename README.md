@@ -6,7 +6,7 @@
 
 ### E2E Demo — Full Payment Flow
 
-https://github.com/Menesahin/lovieco-payment/raw/main/docs/videos/full-payment-flow.mp4
+https://github.com/user-attachments/assets/3e4c84bb-4271-47a1-a08f-7b9bd3c714a5
 
 > Alice tops up wallet → creates $42 request to Bob → Bob pays → atomic balance transfer → both dashboards updated
 
