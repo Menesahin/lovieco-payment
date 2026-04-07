@@ -84,11 +84,8 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
           const config = typeConfig[item.type] ?? typeConfig.topup;
           const isPayProcessing = payingId === item.requestId;
 
-          return (
-            <div
-              key={item.id}
-              className="group flex items-center gap-3 px-5 py-3.5 hover:bg-stone-50/60 transition-colors duration-150 border-l-2 border-transparent hover:border-amber-500/60"
-            >
+          const rowContent = (
+            <>
               {/* Icon */}
               <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full ${config.iconBg}`}>
                 {config.icon}
@@ -97,13 +94,7 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
               {/* Content */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
-                  {item.requestId ? (
-                    <Link href={`/requests/${item.requestId}`} className="text-sm font-medium hover:underline underline-offset-2 truncate">
-                      {item.title}
-                    </Link>
-                  ) : (
-                    <span className="text-sm font-medium truncate">{item.title}</span>
-                  )}
+                  <span className="text-sm font-medium truncate">{item.title}</span>
                   {item.status && (
                     <StatusBadge status={item.status as "PENDING" | "PAID" | "DECLINED" | "CANCELLED" | "EXPIRED"} />
                   )}
@@ -112,6 +103,17 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
                   {item.description ? `${item.description} · ` : ""}{formatRelative(item.createdAt)}
                 </p>
               </div>
+            </>
+          );
+
+          // Actionable items need div (buttons inside), others get full-row Link
+          if (item.actionable) {
+            return (
+              <div
+                key={item.id}
+                className="group flex items-center gap-3 px-5 py-3.5 hover:bg-stone-50/60 transition-colors duration-150 border-l-2 border-transparent hover:border-amber-500/60"
+              >
+                {rowContent}
 
               {/* Amount + Actions */}
               <div className="shrink-0 text-right">
@@ -146,6 +148,28 @@ export function ActivityFeed({ items, total, page, totalPages, onPay, onDecline 
                 )}
               </div>
             </div>
+            );
+          }
+
+          // Non-actionable: entire row is a link
+          return (
+            <Link
+              key={item.id}
+              href={item.requestId ? `/requests/${item.requestId}` : "/wallet"}
+              className="group flex items-center gap-3 px-5 py-3.5 hover:bg-stone-50/60 transition-colors duration-150 border-l-2 border-transparent hover:border-amber-500/60 cursor-pointer"
+            >
+              {rowContent}
+              <div className="shrink-0 text-right">
+                <p className={`text-xs font-semibold font-mono ${
+                  item.type === "topup" || item.type === "payment_received" ? "text-emerald-600" :
+                  item.type === "payment_sent" ? "text-red-600" :
+                  item.status === "PAID" && item.type === "request_outgoing" ? "text-emerald-600" :
+                  "text-foreground"
+                }`}>
+                  {item.amountFormatted}
+                </p>
+              </div>
+            </Link>
           );
         })}
       </div>
