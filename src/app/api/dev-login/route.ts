@@ -13,10 +13,19 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "email param required" }, { status: 400 });
   }
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  let user = await prisma.user.findUnique({ where: { email } });
   if (!user) {
-    return NextResponse.json({ error: "User not found" }, { status: 404 });
+    // Auto-create user in dev mode
+    user = await prisma.user.create({
+      data: { email, name: email.split("@")[0], emailVerified: new Date() },
+    });
   }
+
+  // Orphan claim — link unclaimed requests (same as auth.ts signIn event)
+  await prisma.paymentRequest.updateMany({
+    where: { recipientEmail: email, recipientId: null },
+    data: { recipientId: user.id },
+  });
 
   // Create session
   const token = `dev-session-${Date.now()}`;

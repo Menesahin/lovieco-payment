@@ -17,4 +17,24 @@ test.describe("Pay Request", () => {
 
     await expect(page.getByText(/your balance/i).first()).toBeVisible();
   });
+
+  test("should complete full payment flow with confirmation", async ({ page }) => {
+    await loginAs(page, USERS.bob.email);
+    await page.goto("/requests/req_1");
+
+    // Click pay button
+    await page.getByRole("button", { name: /pay \$/i }).first().click();
+
+    // Confirmation dialog should appear
+    await expect(page.getByRole("heading", { name: "Confirm Payment" })).toBeVisible();
+    await expect(page.getByText(/Pay \$25\.00 to/i)).toBeVisible();
+
+    // Confirm payment
+    await page.getByRole("button", { name: "Confirm Payment" }).click();
+
+    // Wait for payment processing (2.5s simulation) and success
+    await expect(page.getByRole("heading", { name: "Payment Successful" })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByText("$25.00")).toBeVisible();
+    await expect(page.getByText(/back to dashboard/i)).toBeVisible();
+  });
 });
