@@ -37,7 +37,8 @@
 - [x] Configure `next.config.ts`: `output: "standalone"`
 - [x] Verify `tsconfig.json`: strict mode, `@/` alias
 - [x] Create `.env` and `.env.example`
-- [ ] Init Spec-Kit (if available): `specify init .` (skipped — manual spec workflow used)
+- [x] Init Spec-Kit: `.specify/` directory created
+- [x] Create `/lovepay-dev` Claude Code skill (`.claude/skills/lovepay-dev/SKILL.md`)
 - [x] Commit: `docs: add spec-driven documentation`
 - [x] Commit: `chore: bootstrap Next.js project with deps`
 

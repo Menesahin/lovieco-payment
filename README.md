@@ -126,6 +126,20 @@ specs/
 | Wallet simulation | DB-level balance tracking makes payments meaningful |
 | `proxy.ts` (not middleware) | Next.js 16 rename, Node.js runtime only |
 
+## AI Development Skill — `/lovepay-dev`
+
+This project includes a custom Claude Code skill (`.claude/skills/lovepay-dev/SKILL.md`) that encodes all project knowledge:
+
+```
+/lovepay-dev plan <feature>      # Spec-driven feature planning
+/lovepay-dev implement <feature> # Build following spec + constitution
+/lovepay-dev fix <bug>           # Trace data flow, find root cause
+/lovepay-dev review              # Anti-pattern detection (30+ rules)
+/lovepay-dev update-specs        # Sync specs with implementation
+```
+
+The skill knows: constitution rules, all 11 ADRs, Prisma 7/Turbopack gotchas, fintech anti-patterns (FIN-01→08), Next.js 16 patterns (NX-01→12), and the full codebase structure.
+
 ## Docker
 
 ```bash
